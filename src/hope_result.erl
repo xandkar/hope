@@ -16,6 +16,13 @@
     .
 
 
+-spec pipe([F], X) ->
+    t(Ok, Error)
+    when X     :: any()
+       , Ok    :: any()
+       , Error :: any()
+       , F     :: fun((X) -> t(Ok, Error))
+       .
 pipe([]    , X) -> X;
 pipe([F|Fs], X) ->
     case F(X)
