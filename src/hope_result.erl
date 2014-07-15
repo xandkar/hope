@@ -1,13 +1,18 @@
 -module(hope_result).
 
--export_type([ t/2
-             ]).
+-export_type(
+    [ t/2
+    ]).
 
--export([ pipe/2
-        ]).
+-export(
+    [ pipe/2
+    ]).
 
 
--type t(A, B) :: {ok, A} | {error, B}.
+-type t(A, B) ::
+      {ok, A}
+    | {error, B}
+    .
 
 
 pipe([]    , X) -> X;
