@@ -1,5 +1,6 @@
 -module(hope_option).
 
+
 -export_type(
     [ t/1
     ]).
@@ -23,10 +24,8 @@ put(X, F) ->
     ;   false -> none
     end.
 
-
 get({some, X}, _) -> X;
 get(none     , Y) -> Y.
-
 
 map({some, X}, F) -> {some, F(X)};
 map(none     , _) -> none.

@@ -1,5 +1,6 @@
 -module(hope_result).
 
+
 -export_type(
     [ t/2
     ]).
