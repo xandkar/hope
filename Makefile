@@ -2,7 +2,8 @@
 	fresh-build \
 	compile \
 	clean \
-	dialyze
+	dialyze \
+	test
 
 fresh-build: \
 	clean \
@@ -16,3 +17,6 @@ clean:
 
 dialyze:
 	@dialyzer ebin
+
+test:
+	@rebar ct skip_deps=true --verbose=0
