@@ -21,7 +21,7 @@
 %% ============================================================================
 
 %% TODO: Make tests generic for any dictionary.
-%% TODO: Each group shold test a type of dictionary against the generic cases.
+%% TODO: Each group should test a type of dictionary against the generic cases.
 
 all() ->
     [{group, ?GROUP_KV_LIST}].
