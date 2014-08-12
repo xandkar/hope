@@ -8,7 +8,8 @@
 
 %% Test cases
 -export(
-    [
+    [ t_set_new/1
+    , t_set_existing/1
     ]).
 
 
@@ -24,7 +25,8 @@ all() ->
 
 groups() ->
     Tests =
-        [
+        [ t_set_new
+        , t_set_existing
         ],
     Properties = [],
     [{?GROUP_KV_LIST, Properties, Tests}].
@@ -33,3 +35,20 @@ groups() ->
 %% =============================================================================
 %%  Test cases
 %% =============================================================================
+
+t_set_new(_Config) ->
+    Key           = key,
+    ValExpected   = bar,
+    ListInitial   = hope_kv_list:empty(),
+    ListResulting = hope_kv_list:set(ListInitial, Key, ValExpected),
+    {some, ValResulting} = hope_kv_list:get(ListResulting, Key),
+    ValResulting = ValExpected.
+
+t_set_existing(_Config) ->
+    Key           = key,
+    ValInitial    = foo,
+    ValExpected   = bar,
+    ListInitial   = [{donald, duck}, {Key, ValInitial}],
+    ListResulting = hope_kv_list:set(ListInitial, Key, ValExpected),
+    {some, ValResulting} = hope_kv_list:get(ListResulting, Key),
+    ValResulting = ValExpected.
