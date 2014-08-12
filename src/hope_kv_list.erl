@@ -51,17 +51,18 @@ update(T, K, F) ->
     % TODO: Eliminate the 2nd lookup.
     set(T, K, V2).
 
-iter(T, Map1) ->
-    Map2 = lift_map_into_list(Map1),
-    lists:foreach(Map2, T).
+iter(T, F1) ->
+    F2 = lift(F1),
+    lists:foreach(F2, T).
 
-map(T, Map1) ->
-    Map2 = lift_map_into_list(Map1),
-    lists:map(Map2, T).
+map(T, F1) ->
+    F2 = lift(F1),
+    F3 = fun ({K, _}=X) -> {K, F2(X)} end,
+    lists:map(F3, T).
 
-filter(T, Map1) ->
-    Map2 = lift_map_into_list(Map1),
-    lists:filter(Map2, T).
+filter(T, F1) ->
+    F2 = lift(F1),
+    lists:filter(F2, T).
 
 fold(T, F1, Accumulator) ->
     F2 = fun ({K, V}, Acc) -> F1(K, V, Acc) end,
@@ -79,5 +80,5 @@ of_kv_list(List) ->
 %% Helpers
 %% ============================================================================
 
-lift_map_into_list(Map) ->
-    fun ({K, V}) -> {K, Map(K, V)} end.
+lift(F) ->
+    fun ({K, V}) -> F(K, V) end.
