@@ -52,16 +52,15 @@ update(T, K, F) ->
     set(T, K, V2).
 
 iter(T, F1) ->
-    F2 = lift(F1),
+    F2 = lift_map(F1),
     lists:foreach(F2, T).
 
 map(T, F1) ->
-    F2 = lift(F1),
-    F3 = fun ({K, _}=X) -> {K, F2(X)} end,
-    lists:map(F3, T).
+    F2 = fun ({K, _}=X) -> {K, apply_map(F1, X)} end,
+    lists:map(F2, T).
 
 filter(T, F1) ->
-    F2 = lift(F1),
+    F2 = lift_map(F1),
     lists:filter(F2, T).
 
 fold(T, F1, Accumulator) ->
@@ -80,5 +79,8 @@ of_kv_list(List) ->
 %% Helpers
 %% ============================================================================
 
-lift(F) ->
-    fun ({K, V}) -> F(K, V) end.
+lift_map(F) ->
+    fun (X) -> apply_map(F, X) end.
+
+apply_map(F, {K, V}) ->
+    F(K, V).
