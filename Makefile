@@ -1,6 +1,12 @@
-.PHONY: fresh-build compile clean dialyze
+.PHONY: \
+	fresh-build \
+	compile \
+	clean \
+	dialyze
 
-fresh-build: clean compile
+fresh-build: \
+	clean \
+	compile
 
 compile:
 	@rebar compile
