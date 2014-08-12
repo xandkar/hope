@@ -1,8 +1,13 @@
 .PHONY: \
+	ci \
 	fresh-build \
 	compile \
 	clean \
 	dialyze \
+	test
+
+ci: \
+	compile \
 	test
 
 fresh-build: \
