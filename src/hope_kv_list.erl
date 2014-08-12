@@ -48,6 +48,7 @@ set(T, K, V) ->
 update(T, K, F) ->
     V1Opt = get(T, K),
     V2 = F(V1Opt),
+    % TODO: Eliminate the 2nd lookup.
     set(T, K, V2).
 
 iter(T, Map1) ->
@@ -70,6 +71,7 @@ to_kv_list(T) ->
     T.
 
 of_kv_list(List) ->
+    % TODO: Decide if validation is to be done here. Do so if yes.
     List.
 
 
