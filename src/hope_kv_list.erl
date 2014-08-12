@@ -79,8 +79,15 @@ of_kv_list(List) ->
 %% Helpers
 %% ============================================================================
 
+-spec lift_map(F) ->
+    G
+    when F :: fun(( K, V1 ) -> V2)
+       , G :: fun(({K, V1}) -> V2)
+       .
 lift_map(F) ->
     fun (X) -> apply_map(F, X) end.
 
+-spec apply_map(fun((K, V1) -> V2), {K, V1}) ->
+    V2.
 apply_map(F, {K, V}) ->
     F(K, V).
