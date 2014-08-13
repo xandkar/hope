@@ -24,7 +24,8 @@
        , Error :: any()
        , F     :: fun((X) -> t(Ok, Error))
        .
-pipe([]    , X) -> X;
+pipe([], X) ->
+    {ok, X};
 pipe([F|Fs], X) ->
     case F(X)
     of  {error, _}=E -> E
