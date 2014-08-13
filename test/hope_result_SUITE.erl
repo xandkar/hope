@@ -35,11 +35,9 @@ groups() ->
 %% =============================================================================
 
 t_pipe(_Config) ->
-    A = foo,
-    Z = qux,
     Steps =
-        [ fun (foo) -> {ok, bar}; (X) -> {error, X} end
-        , fun (bar) -> {ok, baz}; (X) -> {error, X} end
-        , fun (baz) -> {ok, qux}; (X) -> {error, X} end
+        [ fun (0) -> {ok, 1}; (X) -> {error, X} end
+        , fun (1) -> {ok, 2}; (X) -> {error, X} end
+        , fun (2) -> {ok, 3}; (X) -> {error, X} end
         ],
-    {ok, Z} = hope_result:pipe(Steps, A).
+    {ok, 3} = hope_result:pipe(Steps, 0).
