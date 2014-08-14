@@ -61,5 +61,10 @@ t_set_existing(_Config) ->
 t_pop(_Config) ->
     KVList = [{a, 1}, {b, 2}, {c, 3}],
     Dict1 = hope_kv_list:of_kv_list(KVList),
-    {{some, 1},  Dict2} = hope_kv_list:pop(Dict1, a),
-    {none     , _Dict3} = hope_kv_list:pop(Dict2, a).
+    {{some, 1} , Dict2} = hope_kv_list:pop(Dict1, a),
+    {none      , Dict3} = hope_kv_list:pop(Dict2, a),
+    {{some, 2} , Dict4} = hope_kv_list:pop(Dict3, b),
+    {none      , Dict5} = hope_kv_list:pop(Dict4, b),
+    {{some, 3} , Dict6} = hope_kv_list:pop(Dict5, c),
+    {none      , Dict7} = hope_kv_list:pop(Dict6, c),
+    [] = hope_kv_list:to_kv_list(Dict7).
