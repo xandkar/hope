@@ -10,6 +10,7 @@
 -export(
     [ t_set_new/1
     , t_set_existing/1
+    , t_pop/1
     ]).
 
 
@@ -30,6 +31,7 @@ groups() ->
     Tests =
         [ t_set_new
         , t_set_existing
+        , t_pop
         ],
     Properties = [],
     [{?GROUP_KV_LIST, Properties, Tests}].
@@ -55,3 +57,9 @@ t_set_existing(_Config) ->
     ListResulting = hope_kv_list:set(ListInitial, Key, ValExpected),
     {some, ValResulting} = hope_kv_list:get(ListResulting, Key),
     ValResulting = ValExpected.
+
+t_pop(_Config) ->
+    KVList = [{a, 1}, {b, 2}, {c, 3}],
+    Dict1 = hope_kv_list:of_kv_list(KVList),
+    {{some, 1},  Dict2} = hope_kv_list:pop(Dict1, a),
+    {none     , _Dict3} = hope_kv_list:pop(Dict2, a).

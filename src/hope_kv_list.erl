@@ -14,6 +14,7 @@
     , get/2
     , set/3
     , update/3
+    , pop/2
     , iter/2
     , map/2
     , filter/2
@@ -50,6 +51,12 @@ update(T, K, F) ->
     V2 = F(V1Opt),
     % TODO: Eliminate the 2nd lookup.
     set(T, K, V2).
+
+pop(T1, K) ->
+    case lists:keytake(K, 1, T1)
+    of  {value, {K, V}, T2} -> {{some, V}, T2}
+    ;   false               -> {none     , T1}
+    end.
 
 iter(T, F1) ->
     F2 = lift_map(F1),

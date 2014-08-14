@@ -21,6 +21,9 @@
 -callback update(t(K, V), K, fun((hope_option:t(V)) -> V)) ->
     t(K, V).
 
+-callback pop(t(K, V), K) ->
+    {hope_option:t(V), t(K, V)}.
+
 -callback map(t(K, V), fun((K, V) -> V)) ->
     t(K, V).
 
