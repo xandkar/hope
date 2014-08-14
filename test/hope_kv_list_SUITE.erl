@@ -4,6 +4,8 @@
 -export(
     [ all/0
     , groups/0
+    , init_per_group/2
+    , end_per_group/2
     ]).
 
 %% Test cases
@@ -14,18 +16,16 @@
     ]).
 
 
--define(GROUP_KV_LIST, kv_list).
+-define(DICT_MODULE         , dict_module).
+-define(DICT_MODULE_KV_LIST , hope_kv_list).
 
 
 %% ============================================================================
 %% Common Test callbacks
 %% ============================================================================
 
-%% TODO: Make tests generic for any dictionary.
-%% TODO: Each group should test a type of dictionary against the generic cases.
-
 all() ->
-    [{group, ?GROUP_KV_LIST}].
+    [{group, ?DICT_MODULE_KV_LIST}].
 
 groups() ->
     Tests =
@@ -34,37 +34,46 @@ groups() ->
         , t_pop
         ],
     Properties = [],
-    [{?GROUP_KV_LIST, Properties, Tests}].
+    [{?DICT_MODULE_KV_LIST, Properties, Tests}].
+
+init_per_group(DictModule, Cfg) ->
+    hope_kv_list:set(Cfg, ?DICT_MODULE, DictModule).
+
+end_per_group(_DictModule, _Cfg) ->
+    ok.
 
 
 %% =============================================================================
 %%  Test cases
 %% =============================================================================
 
-t_set_new(_Config) ->
+t_set_new(Cfg) ->
+    {some, DictModule} = hope_kv_list:get(Cfg, ?DICT_MODULE),
     Key           = key,
     ValExpected   = bar,
-    ListInitial   = hope_kv_list:empty(),
-    ListResulting = hope_kv_list:set(ListInitial, Key, ValExpected),
-    {some, ValResulting} = hope_kv_list:get(ListResulting, Key),
+    ListInitial   = DictModule:empty(),
+    ListResulting = DictModule:set(ListInitial, Key, ValExpected),
+    {some, ValResulting} = DictModule:get(ListResulting, Key),
     ValResulting = ValExpected.
 
-t_set_existing(_Config) ->
+t_set_existing(Cfg) ->
+    {some, DictModule} = hope_kv_list:get(Cfg, ?DICT_MODULE),
     Key           = key,
     ValInitial    = foo,
     ValExpected   = bar,
     ListInitial   = [{donald, duck}, {Key, ValInitial}],
-    ListResulting = hope_kv_list:set(ListInitial, Key, ValExpected),
-    {some, ValResulting} = hope_kv_list:get(ListResulting, Key),
+    ListResulting = DictModule:set(ListInitial, Key, ValExpected),
+    {some, ValResulting} = DictModule:get(ListResulting, Key),
     ValResulting = ValExpected.
 
-t_pop(_Config) ->
+t_pop(Cfg) ->
+    {some, DictModule} = hope_kv_list:get(Cfg, ?DICT_MODULE),
     KVList = [{a, 1}, {b, 2}, {c, 3}],
-    Dict1 = hope_kv_list:of_kv_list(KVList),
-    {{some, 1} , Dict2} = hope_kv_list:pop(Dict1, a),
-    {none      , Dict3} = hope_kv_list:pop(Dict2, a),
-    {{some, 2} , Dict4} = hope_kv_list:pop(Dict3, b),
-    {none      , Dict5} = hope_kv_list:pop(Dict4, b),
-    {{some, 3} , Dict6} = hope_kv_list:pop(Dict5, c),
-    {none      , Dict7} = hope_kv_list:pop(Dict6, c),
-    [] = hope_kv_list:to_kv_list(Dict7).
+    Dict1 = DictModule:of_kv_list(KVList),
+    {{some, 1} , Dict2} = DictModule:pop(Dict1, a),
+    {none      , Dict3} = DictModule:pop(Dict2, a),
+    {{some, 2} , Dict4} = DictModule:pop(Dict3, b),
+    {none      , Dict5} = DictModule:pop(Dict4, b),
+    {{some, 3} , Dict6} = DictModule:pop(Dict5, c),
+    {none      , Dict7} = DictModule:pop(Dict6, c),
+    [] = DictModule:to_kv_list(Dict7).
