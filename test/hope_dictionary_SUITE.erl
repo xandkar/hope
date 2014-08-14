@@ -1,4 +1,4 @@
--module(hope_kv_list_SUITE).
+-module(hope_dictionary_SUITE).
 
 %% Callbacks
 -export(
