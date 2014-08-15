@@ -16,11 +16,11 @@
 -spec unique_preserve_order(t(A)) ->
     t(A).
 unique_preserve_order(L) ->
-    AppendIfNew =
+    PrependIfNew =
         fun (X, Xs) ->
             case lists:member(X, Xs)
-            of  true  -> Xs
-            ;   false -> Xs ++ [X]
+            of  true  ->      Xs
+            ;   false -> [X | Xs]
             end
         end,
-    lists:foldl(AppendIfNew, [], L).
+    lists:reverse(lists:foldl(PrependIfNew, [], L)).
