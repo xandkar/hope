@@ -13,6 +13,7 @@
     [ t_set_new/1
     , t_set_existing/1
     , t_pop/1
+    , t_fold/1
     ]).
 
 
@@ -32,6 +33,7 @@ groups() ->
         [ t_set_new
         , t_set_existing
         , t_pop
+        , t_fold
         ],
     Properties = [],
     [{?DICT_MODULE_KV_LIST, Properties, Tests}].
@@ -77,3 +79,9 @@ t_pop(Cfg) ->
     {{some, 3} , Dict6} = DictModule:pop(Dict5, c),
     {none      , Dict7} = DictModule:pop(Dict6, c),
     [] = DictModule:to_kv_list(Dict7).
+
+t_fold(Cfg) ->
+    {some, DictModule} = hope_kv_list:get(Cfg, ?DICT_MODULE),
+    KVList = [{a, 1}, {a, 5}, {b, 3}, {c, 4}, {c, 4}],
+    Dict = DictModule:of_kv_list(KVList),
+    17 = DictModule:fold(Dict, fun (_K, V, Acc) -> V + Acc end, 0).
