@@ -3,10 +3,14 @@
 	fresh-build \
 	compile \
 	clean \
+	deps \
+	deps-get \
+	deps-update \
 	dialyze \
 	test
 
 ci: \
+	deps \
 	compile \
 	test
 
@@ -19,6 +23,16 @@ compile:
 
 clean:
 	@rebar clean
+
+deps: \
+	deps-get \
+	deps-update
+
+deps-get:
+	@rebar get-deps
+
+deps-update:
+	@rebar update-deps
 
 dialyze:
 	@dialyzer ebin
