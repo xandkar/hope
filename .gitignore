@@ -1,3 +1,4 @@
 ebin/
 logs/
 test/*.beam
+/deps/proper/

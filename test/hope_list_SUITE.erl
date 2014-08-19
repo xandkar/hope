@@ -1,5 +1,7 @@
 -module(hope_list_SUITE).
 
+-include_lib("proper/include/proper.hrl").
+
 %% Callbacks
 -export(
     [ all/0
@@ -13,6 +15,8 @@
 
 
 -define(GROUP , hope_list).
+
+-define(PROPTEST(A), true = proper:quickcheck(A())).
 
 
 %% ============================================================================
@@ -35,11 +39,12 @@ groups() ->
 %% =============================================================================
 
 t_unique_preserve_order(_Cfg) ->
-    ListAGiven = [a, a, g, b, f, c, a, d, a, e, f, d],
-    ListBGiven = "australia",
-    ListAExpected = [a, g, b, f, c, d, e],
-    ListBExpected = "austrli",
-    ListAComputed = hope_list:unique_preserve_order(ListAGiven),
-    ListBComputed = hope_list:unique_preserve_order(ListBGiven),
-    ListAComputed = ListAExpected,
-    ListBComputed = ListBExpected.
+    ?PROPTEST(prop_unique_preserve_order).
+
+prop_unique_preserve_order() ->
+    ?FORALL(L, list(),
+            begin
+                Duplicates = L -- lists:usort(L),
+                hope_list:unique_preserve_order(L) ==
+                    lists:reverse(lists:reverse(L) -- Duplicates)
+            end).
