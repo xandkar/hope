@@ -72,7 +72,7 @@ filter(T, F1) ->
 
 fold(T, F1, Accumulator) ->
     F2 = fun ({K, V}, Acc) -> F1(K, V, Acc) end,
-    lists:foldl(F2, T, Accumulator).
+    lists:foldl(F2, Accumulator, T).
 
 to_kv_list(T) ->
     T.
