@@ -1,5 +1,7 @@
 -module(hope_dictionary_SUITE).
 
+-include_lib("proper/include/proper.hrl").
+
 %% Callbacks
 -export(
     [ all/0
@@ -14,6 +16,7 @@
     , t_set_existing/1
     , t_pop/1
     , t_fold/1
+    , t_dictionary_specs/1
     ]).
 
 
@@ -34,8 +37,9 @@ groups() ->
         , t_set_existing
         , t_pop
         , t_fold
+        , t_dictionary_specs
         ],
-    Properties = [],
+    Properties = [parallel],
     [{?DICT_MODULE_KV_LIST, Properties, Tests}].
 
 init_per_group(DictModule, Cfg) ->
@@ -85,3 +89,7 @@ t_fold(Cfg) ->
     KVList = [{a, 1}, {a, 5}, {b, 3}, {c, 4}, {c, 4}],
     Dict = DictModule:of_kv_list(KVList),
     17 = DictModule:fold(Dict, fun (_K, V, Acc) -> V + Acc end, 0).
+
+t_dictionary_specs(Cfg) ->
+    {some, DictModule} = hope_kv_list:get(Cfg, ?DICT_MODULE),
+    [] = proper:check_specs(DictModule).
