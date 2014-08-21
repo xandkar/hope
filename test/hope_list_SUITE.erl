@@ -11,6 +11,7 @@
 %% Test cases
 -export(
     [ t_unique_preserve_order/1
+    , t_hope_list_specs/1
     ]).
 
 
@@ -29,8 +30,9 @@ all() ->
 groups() ->
     Tests =
         [ t_unique_preserve_order
+        , t_hope_list_specs
         ],
-    Properties = [],
+    Properties = [parallel],
     [{?GROUP, Properties, Tests}].
 
 
@@ -48,3 +50,6 @@ prop_unique_preserve_order() ->
                 hope_list:unique_preserve_order(L) ==
                     lists:reverse(lists:reverse(L) -- Duplicates)
             end).
+
+t_hope_list_specs(_) ->
+    [] = proper:check_specs(hope_list).

@@ -1,5 +1,7 @@
 -module(hope_result_SUITE).
 
+-include_lib("proper/include/proper.hrl").
+
 %% Callbacks
 -export(
     [ all/0
@@ -12,6 +14,7 @@
 -export(
     [ t_pipe_ok/1
     , t_pipe_error/1
+    , t_hope_result_specs/1
     ]).
 
 
@@ -29,8 +32,9 @@ groups() ->
     Tests =
         [ t_pipe_ok
         , t_pipe_error
+        , t_hope_result_specs
         ],
-    Properties = [],
+    Properties = [parallel],
     [{?GROUP_PIPE, Properties, Tests}].
 
 init_per_group(?GROUP_PIPE, Cfg) ->
@@ -56,3 +60,6 @@ t_pipe_ok(Cfg) ->
 t_pipe_error(Cfg) ->
     {some, Steps} = hope_kv_list:get(Cfg, steps),
     {error, 1} = hope_result:pipe(Steps, 1).
+
+t_hope_result_specs(_) ->
+    [] = proper:check_specs(hope_result).
