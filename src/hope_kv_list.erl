@@ -21,11 +21,19 @@
     , fold/3
     , of_kv_list/1
     , to_kv_list/1
+    , validate_unique_presence/2  % Assume default optional parameter(s)
+    , validate_unique_presence/3  % Specify optional parameter(s)
     ]).
 
 
 -type t(K, V) ::
     [{K, V}].
+
+-type presence_error(A) ::
+      {keys_missing     , [A]}
+    | {keys_duplicated  , [A]}
+    | {keys_unsupported , [A]}
+    .
 
 
 %% ============================================================================
@@ -100,6 +108,44 @@ to_kv_list(T) ->
 of_kv_list(List) ->
     % TODO: Decide if validation is to be done here. Do so if yes.
     List.
+
+-spec validate_unique_presence(t(K, _V), [K]) ->
+    hope_result:t(ok, [presence_error(K)]).
+validate_unique_presence(T, KeysRequired) ->
+    KeysOptional = [],
+    validate_unique_presence(T, KeysRequired, KeysOptional).
+
+-spec validate_unique_presence(t(K, _V), [K], [K]) ->
+    hope_result:t(ok, [presence_error(K)]).
+validate_unique_presence(T, KeysRequired, KeysOptional) ->
+    KeysSupported   = KeysRequired ++ KeysOptional,
+    KeysGiven       = [K || {K, _V} <- T],
+    KeysGivenUnique = lists:usort(KeysGiven),
+    KeysDups        = lists:usort(KeysGiven -- KeysGivenUnique),
+    KeysMissing     = KeysRequired -- KeysGivenUnique,
+    KeysUnsupported = KeysGivenUnique -- KeysSupported,
+    case {KeysDups, KeysMissing, KeysUnsupported}
+    of  {[], [], []} ->
+            {ok, ok}
+    ;   {Dups, Missing, Unsupported} ->
+            ErrorDups =
+                case Dups
+                of  []    -> []
+                ;   [_|_] -> [{keys_duplicated, Dups}]
+                end,
+            ErrorMissing =
+                case Missing
+                of  []    -> []
+                ;   [_|_] -> [{keys_missing, Missing}]
+                end,
+            ErrorUnsupported =
+                case Unsupported
+                of  []    -> []
+                ;   [_|_] -> [{keys_unsupported, Unsupported}]
+                end,
+            Errors = ErrorDups ++ ErrorMissing ++ ErrorUnsupported,
+            {error, Errors}
+    end.
 
 
 %% ============================================================================
