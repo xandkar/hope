@@ -90,6 +90,9 @@ t_hope_result_specs(_) ->
 t_lift_exn(_Cfg) ->
     Class = throw,
     Reason = foofoo,
+    Label = bar,
     F = fun (ok) -> apply(erlang, Class, [Reason]) end,
     G = hope_result:lift_exn(F),
-    {error, {Class, Reason}} = G(ok).
+    H = hope_result:lift_exn(F, Label),
+    {error, {Class, Reason}} = G(ok),
+    {error, {Label, {Class, Reason}}} = H(ok).

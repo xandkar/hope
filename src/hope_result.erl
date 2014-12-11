@@ -8,6 +8,7 @@
 -export(
     [ pipe/2
     , lift_exn/1
+    , lift_exn/2
     ]).
 
 
@@ -45,5 +46,21 @@ lift_exn(F) when is_function(F, 1) ->
             {ok, F(X)}
         catch Class:Reason ->
             {error, {Class, Reason}}
+        end
+    end.
+
+-spec lift_exn(F, Label) -> G
+    when F     :: fun((A)-> B)
+       , G     :: fun((A)-> t(B, {Label, {Class, Reason :: any()}}))
+       , Class :: error
+                | exit
+                | throw
+       .
+lift_exn(F, Label) when is_function(F, 1) ->
+    fun(X) ->
+        try
+            {ok, F(X)}
+        catch Class:Reason ->
+            {error, {Label, {Class, Reason}}}
         end
     end.
