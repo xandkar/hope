@@ -1,5 +1,6 @@
 -module(hope_result_SUITE).
 
+%% TODO: Import only what is used.
 -include_lib("proper/include/proper.hrl").
 
 %% Callbacks
@@ -19,6 +20,7 @@
 
 
 -define(GROUP_PIPE, result_pipe).
+-define(GROUP_SPEC, result_spec).
 
 
 %% ============================================================================
@@ -26,17 +28,25 @@
 %% ============================================================================
 
 all() ->
-    [{group, ?GROUP_PIPE}].
+    [ {group, ?GROUP_PIPE}
+    , {group, ?GROUP_SPEC}
+    ].
 
 groups() ->
-    Tests =
+    PipeTests =
         [ t_pipe_ok
         , t_pipe_error
-        , t_hope_result_specs
+        ],
+    SpecTests =
+        [ t_hope_result_specs
         ],
     Properties = [parallel],
-    [{?GROUP_PIPE, Properties, Tests}].
+    [ {?GROUP_PIPE, Properties, PipeTests}
+    , {?GROUP_SPEC, Properties, SpecTests}
+    ].
 
+init_per_group(?GROUP_SPEC, Cfg) ->
+    Cfg;
 init_per_group(?GROUP_PIPE, Cfg) ->
     Steps =
         [ fun (0) -> {ok, 1}; (X) -> {error, X} end
@@ -45,6 +55,8 @@ init_per_group(?GROUP_PIPE, Cfg) ->
         ],
     hope_kv_list:set(Cfg, steps, Steps).
 
+end_per_group(?GROUP_SPEC, _Cfg) ->
+    ok;
 end_per_group(?GROUP_PIPE, _Cfg) ->
     ok.
 
