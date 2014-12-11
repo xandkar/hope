@@ -9,6 +9,7 @@
     [ put/2
     , get/2
     , map/2
+    , iter/2
     ]).
 
 
@@ -35,3 +36,8 @@ get(none     , Y) -> Y.
     t(B).
 map({some, X}, F) -> {some, F(X)};
 map(none     , _) -> none.
+
+-spec iter(t(A), fun((A) -> (ok))) ->
+    ok.
+iter({some, X}, F) -> ok = F(X);
+iter(none     , _) -> ok.
