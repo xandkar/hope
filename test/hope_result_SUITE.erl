@@ -16,11 +16,13 @@
     [ t_pipe_ok/1
     , t_pipe_error/1
     , t_hope_result_specs/1
+    , t_lift_exn/1
     ]).
 
 
 -define(GROUP_PIPE, result_pipe).
 -define(GROUP_SPEC, result_spec).
+-define(GROUP_LIFT, result_lift_exn).
 
 
 %% ============================================================================
@@ -30,6 +32,7 @@
 all() ->
     [ {group, ?GROUP_PIPE}
     , {group, ?GROUP_SPEC}
+    , {group, ?GROUP_LIFT}
     ].
 
 groups() ->
@@ -40,11 +43,17 @@ groups() ->
     SpecTests =
         [ t_hope_result_specs
         ],
+    LiftTests =
+        [ t_lift_exn
+        ],
     Properties = [parallel],
     [ {?GROUP_PIPE, Properties, PipeTests}
     , {?GROUP_SPEC, Properties, SpecTests}
+    , {?GROUP_LIFT, Properties, LiftTests}
     ].
 
+init_per_group(?GROUP_LIFT, Cfg) ->
+    Cfg;
 init_per_group(?GROUP_SPEC, Cfg) ->
     Cfg;
 init_per_group(?GROUP_PIPE, Cfg) ->
@@ -55,6 +64,8 @@ init_per_group(?GROUP_PIPE, Cfg) ->
         ],
     hope_kv_list:set(Cfg, steps, Steps).
 
+end_per_group(?GROUP_LIFT, _Cfg) ->
+    ok;
 end_per_group(?GROUP_SPEC, _Cfg) ->
     ok;
 end_per_group(?GROUP_PIPE, _Cfg) ->
@@ -75,3 +86,10 @@ t_pipe_error(Cfg) ->
 
 t_hope_result_specs(_) ->
     [] = proper:check_specs(hope_result).
+
+t_lift_exn(_Cfg) ->
+    Class = throw,
+    Reason = foofoo,
+    F = fun (ok) -> apply(erlang, Class, [Reason]) end,
+    G = hope_result:lift_exn(F),
+    {error, {Class, Reason}} = G(ok).
