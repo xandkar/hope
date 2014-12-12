@@ -10,6 +10,7 @@
     , get/2
     , map/2
     , iter/2
+    , of_result/1
     ]).
 
 
@@ -41,3 +42,8 @@ map(none     , _) -> none.
     ok.
 iter({some, X}, F) -> ok = F(X);
 iter(none     , _) -> ok.
+
+-spec of_result(hope_result:t(A, _B)) ->
+    t(A).
+of_result({ok, X})    -> {some, X};
+of_result({error, _}) -> none.
