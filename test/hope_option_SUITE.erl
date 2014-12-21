@@ -13,6 +13,7 @@
     , t_get/1
     , t_map/1
     , t_iter/1
+    , t_pipe/1
     ]).
 
 
@@ -34,6 +35,7 @@ groups() ->
         , t_get
         , t_map
         , t_iter
+        , t_pipe
         ],
     Properties = [parallel],
     [ {?GROUP, Properties, Tests}
@@ -75,3 +77,14 @@ t_of_result(_Cfg) ->
     ResultError = {error, Bar},
     {some, Foo} = hope_option:of_result(ResultOk),
     none        = hope_option:of_result(ResultError).
+
+t_pipe(_Cfg) ->
+    Steps =
+        [ fun (0) -> hope_option:return(1); (_) -> none end
+        , fun (1) -> hope_option:return(2); (_) -> none end
+        , fun (2) -> hope_option:return(3); (_) -> none end
+        ],
+    {some, 3} = hope_option:pipe(Steps, 0),
+    none      = hope_option:pipe(Steps, 1),
+    none      = hope_option:pipe(Steps, 2),
+    none      = hope_option:pipe(Steps, 3).

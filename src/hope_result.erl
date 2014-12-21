@@ -1,12 +1,15 @@
 -module(hope_result).
 
+-behavior(hope_monad).
 
 -export_type(
     [ t/2
     ]).
 
 -export(
-    [ pipe/2
+    [ return/1
+    , map/2
+    , pipe/2
     , lift_exn/1
     , lift_exn/2
     ]).
@@ -17,6 +20,18 @@
     | {error, B}
     .
 
+
+-spec return(A) ->
+    {ok, A}.
+return(X) ->
+    {ok, X}.
+
+-spec map(t(A, Error), fun((A) -> (B))) ->
+    t(B, Error).
+map({ok, X}, F) ->
+    {ok, F(X)};
+map({error, _}=Error, _) ->
+    Error.
 
 -spec pipe([F], X) ->
     t(Ok, Error)
