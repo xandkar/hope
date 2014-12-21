@@ -7,12 +7,13 @@
 -export(
     [ unique_preserve_order/1
     , map/2
+    , map/3  % Tunable recursion limit
     , map_rev/2
     , map_slow/2
     ]).
 
 
--define(RECURSION_LIMIT, 1000).
+-define(DEFAULT_RECURSION_LIMIT, 1000).
 
 
 -type t(A) ::
@@ -24,40 +25,43 @@
 -spec map([A], fun((A) -> (B))) ->
     [B].
 map(Xs, F) ->
-    map(Xs, F, 0).
+    map(Xs, F, ?DEFAULT_RECURSION_LIMIT).
 
--spec map([A], fun((A) -> (B)), non_neg_integer()) ->
+-spec map([A], fun((A) -> (B)), RecursionLimit :: non_neg_integer()) ->
     [B].
-map([], _, _) ->
+map(Xs, F, RecursionLimit) ->
+    map(Xs, F, RecursionLimit, 0).
+
+map([], _, _, _) ->
     [];
-map([X1], F, _) ->
+map([X1], F, _, _) ->
     Y1 = F(X1),
     [Y1];
-map([X1, X2], F, _) ->
+map([X1, X2], F, _, _) ->
     Y1 = F(X1),
     Y2 = F(X2),
     [Y1, Y2];
-map([X1, X2, X3], F, _) ->
+map([X1, X2, X3], F, _, _) ->
     Y1 = F(X1),
     Y2 = F(X2),
     Y3 = F(X3),
     [Y1, Y2, Y3];
-map([X1, X2, X3, X4], F, _) ->
+map([X1, X2, X3, X4], F, _, _) ->
     Y1 = F(X1),
     Y2 = F(X2),
     Y3 = F(X3),
     Y4 = F(X4),
     [Y1, Y2, Y3, Y4];
-map([X1, X2, X3, X4, X5 | Xs], F, Count) ->
+map([X1, X2, X3, X4, X5 | Xs], F, RecursionLimit, RecursionCount) ->
     Y1 = F(X1),
     Y2 = F(X2),
     Y3 = F(X3),
     Y4 = F(X4),
     Y5 = F(X5),
     Ys =
-        case Count > ?RECURSION_LIMIT
+        case RecursionCount > RecursionLimit
         of  true  -> map_slow(Xs, F)
-        ;   false -> map     (Xs, F, Count + 1)
+        ;   false -> map     (Xs, F, RecursionLimit, RecursionCount + 1)
         end,
     [Y1, Y2, Y3, Y4, Y5 | Ys].
 
