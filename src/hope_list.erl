@@ -6,11 +6,28 @@
 
 -export(
     [ unique_preserve_order/1
+    , map_rev/2
     ]).
 
 
 -type t(A) ::
     [A].
+
+
+%% @doc O(N), tail-recursive equivalent to lists:rev(lists:map(F, L))
+%% @end
+-spec map_rev([A], fun((A) -> (B))) ->
+    [B].
+map_rev(Xs, F) ->
+    map_rev_acc(Xs, F, []).
+
+-spec map_rev_acc([A], fun((A) -> (B)), [B]) ->
+    [B].
+map_rev_acc([], _, Ys) ->
+    Ys;
+map_rev_acc([X|Xs], F, Ys) ->
+    Y = F(X),
+    map_rev_acc(Xs, F, [Y|Ys]).
 
 
 -spec unique_preserve_order(t(A)) ->
