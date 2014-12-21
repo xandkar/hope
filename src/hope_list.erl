@@ -23,7 +23,8 @@ map_slow(Xs, F) ->
     lists:reverse(map_rev(Xs, F)).
 
 
-%% @doc O(N), tail-recursive equivalent to lists:rev(lists:map(F, L))
+%% @doc Tail-recursive alternative to lists:map/2, which accumulates and
+%% returns list in reverse order.
 %% @end
 -spec map_rev([A], fun((A) -> (B))) ->
     [B].
