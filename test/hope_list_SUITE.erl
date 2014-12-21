@@ -13,6 +13,7 @@
     [ t_unique_preserve_order/1
     , t_hope_list_specs/1
     , t_map_rev/1
+    , t_map_slow/1
     ]).
 
 
@@ -33,6 +34,7 @@ groups() ->
         [ t_unique_preserve_order
         , t_hope_list_specs
         , t_map_rev
+        , t_map_slow
         ],
     Properties = [parallel],
     [{?GROUP, Properties, Tests}].
@@ -46,6 +48,11 @@ t_map_rev(_Cfg) ->
     F = fun (N) -> N + 1 end,
     [4, 3, 2] = hope_list:map_rev([1, 2, 3], F),
     []        = hope_list:map_rev([], F).
+
+t_map_slow(_Cfg) ->
+    F = fun (N) -> N + 1 end,
+    [2, 3, 4] = hope_list:map_slow([1, 2, 3], F),
+    []        = hope_list:map_slow([], F).
 
 t_unique_preserve_order(_Cfg) ->
     ?PROPTEST(prop_unique_preserve_order).

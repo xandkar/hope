@@ -7,11 +7,20 @@
 -export(
     [ unique_preserve_order/1
     , map_rev/2
+    , map_slow/2
     ]).
 
 
 -type t(A) ::
     [A].
+
+
+%% @doc lists:reverse(map_rev(L, F))
+%% @end
+-spec map_slow([A], fun((A) -> (B))) ->
+    [B].
+map_slow(Xs, F) ->
+    lists:reverse(map_rev(Xs, F)).
 
 
 %% @doc O(N), tail-recursive equivalent to lists:rev(lists:map(F, L))
