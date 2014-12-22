@@ -14,6 +14,7 @@
     , iter/2
     , pipe/2
     , of_result/1
+    , of_undefined/1
     ]).
 
 
@@ -65,3 +66,8 @@ pipe([F|Fs], X) ->
     t(A).
 of_result({ok, X})    -> {some, X};
 of_result({error, _}) -> none.
+
+-spec of_undefined(undefined | A) ->
+    t(A).
+of_undefined(undefined) -> none;
+of_undefined(X)         -> {some, X}.

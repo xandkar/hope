@@ -9,6 +9,7 @@
 %% Test cases
 -export(
     [ t_of_result/1
+    , t_of_undefined/1
     , t_put/1
     , t_get/1
     , t_map/1
@@ -31,6 +32,7 @@ all() ->
 groups() ->
     Tests =
         [ t_of_result
+        , t_of_undefined
         , t_put
         , t_get
         , t_map
@@ -88,3 +90,12 @@ t_pipe(_Cfg) ->
     none      = hope_option:pipe(Steps, 1),
     none      = hope_option:pipe(Steps, 2),
     none      = hope_option:pipe(Steps, 3).
+
+t_of_undefined(_Cfg) ->
+    Foo = foo,
+    Bar = bar,
+    Baz = baz,
+    {some, Foo} = hope_option:of_undefined(Foo),
+    {some, Bar} = hope_option:of_undefined(Bar),
+    {some, Baz} = hope_option:of_undefined(Baz),
+    none        = hope_option:of_undefined(undefined).
