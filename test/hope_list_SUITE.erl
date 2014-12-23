@@ -15,6 +15,7 @@
     , t_map_rev/1
     , t_map_slow/1
     , t_map/1
+    , t_map_3/1
     ]).
 
 
@@ -37,6 +38,7 @@ groups() ->
         , t_map_rev
         , t_map_slow
         , t_map
+        , t_map_3
         ],
     Properties = [parallel],
     [{?GROUP, Properties, Tests}].
@@ -66,6 +68,13 @@ t_map(_Cfg) ->
 map() ->
     ?FORALL({L, F}, {list(integer()), function([integer()], term())},
             hope_list:map(L, F) == lists:map(F, L)).
+
+t_map_3(_Cfg) ->
+    ?PROPTEST(map_3).
+
+map_3() ->
+    ?FORALL({L, F, N}, {list(integer()), function([integer()], term()), non_neg_integer()},
+            hope_list:map(L, F, N) == lists:map(F, L)).
 
 t_unique_preserve_order(_Cfg) ->
     ?PROPTEST(prop_unique_preserve_order).
