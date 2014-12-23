@@ -47,21 +47,25 @@ groups() ->
 %% =============================================================================
 
 t_map_rev(_Cfg) ->
-    F = fun (N) -> N + 1 end,
-    [4, 3, 2] = hope_list:map_rev([1, 2, 3], F),
-    []        = hope_list:map_rev([], F).
+    ?PROPTEST(map_rev).
+
+map_rev() ->
+    ?FORALL({L, F}, {list(integer()), function([integer()], term())},
+            hope_list:map_rev(L, F) == lists:reverse(lists:map(F, L))).
 
 t_map_slow(_Cfg) ->
-    F = fun (N) -> N + 1 end,
-    [2, 3, 4] = hope_list:map_slow([1, 2, 3], F),
-    []        = hope_list:map_slow([], F).
+    ?PROPTEST(map_slow).
+
+map_slow() ->
+    ?FORALL({L, F}, {list(integer()), function([integer()], term())},
+            hope_list:map_slow(L, F) == lists:map(F, L)).
 
 t_map(_Cfg) ->
-    F = fun (N) -> N + 1 end,
-    Xs = lists:seq(1, 5010),
-    Ys = lists:map(F, Xs),
-    Ys = hope_list:map(Xs, F),
-    [] = hope_list:map([], F).
+    ?PROPTEST(map).
+
+map() ->
+    ?FORALL({L, F}, {list(integer()), function([integer()], term())},
+            hope_list:map(L, F) == lists:map(F, L)).
 
 t_unique_preserve_order(_Cfg) ->
     ?PROPTEST(prop_unique_preserve_order).
