@@ -1,6 +1,6 @@
 -module(hope_option).
 
--behavior(hope_monad).
+-behavior(hope_gen_monad).
 
 -export_type(
     [ t/1

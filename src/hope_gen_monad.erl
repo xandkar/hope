@@ -1,4 +1,4 @@
--module(hope_monad).
+-module(hope_gen_monad).
 
 -type t(_A) ::
     term().

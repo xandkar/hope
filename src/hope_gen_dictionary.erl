@@ -1,4 +1,4 @@
--module(hope_dictionary).
+-module(hope_gen_dictionary).
 
 -export_type(
     [ t/2
