@@ -3,7 +3,7 @@
 %%%----------------------------------------------------------------------------
 -module(hope_kv_list).
 
--behavior(hope_dictionary).
+-behavior(hope_gen_dictionary).
 
 -export_type(
     [ t/2
