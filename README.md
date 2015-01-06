@@ -1,14 +1,49 @@
 [![Build Status](https://travis-ci.org/ibnfirnas/hope.svg?branch=master)](https://travis-ci.org/ibnfirnas/hope)
 
-Higher Order Programming in Erlang
-==================================
+Hope
+====
 
 A quest for a "standard" library with uniform, composable abstractions.
 
+Originally motivated by a desire for an error monad and generic option type
+operations, and stood for _Higher Order Programming in Erlang_. Soon after, I
+wished all standard containers used consistent conventions and protocols (such
+as consistent accessor names, argument positioning rules and expression of
+semantics with option and result types).
 
-Monads
-------
+Here lies an experiment to see what something like that could look like. As all
+proper experiments should, this one is used daily in production projects (hence
+the high-ish version number, 'cause semver).
 
+
+Conventions
+-----------
+
+I entertain any forward-thinking library design ideas, but more than anything
+else, these are influenced by Jane Street's Core of the OCaml world.
+
+- A module per data type implementation
+- Name of the module is the name of the type
+- Inside the module, the type it implements is always named t(..), such as:
+  `hope_foo:t()`, _not_ `hope_foo:foo()`
+- t(..) is always the first argument
+- Names of private records _may_ be short, such as: `#foo{}` or `#t{}` (Though
+  I'm second-guessing this idea, since seeing `{t, ..}` in stack traces is less
+  than helpful. I'm considering requiring fully-qualified names for all record
+  definitions and maybe short-handing what would've been `#t{..}` as
+  `-define(T, ?MODULE). -record(?T, {..}).`, which may be a bit ugly. Still
+  thinking...)
+- Names of public records _must_ be fully qualified, such as: `#hope_module_record{}`
+- Names of all modules _must_ be fully qualified, such as: `hope_module` (this
+  should go without saying, but just to be sure...)
+
+
+Abstractions
+------------
+
+### Monads
+
+A class of burritos, used for sequencing operations on a particular data type.
 Defined in `hope_gen_monad`, implemented as:
 
 - `hope_result`: for composition of common functions returning
@@ -22,15 +57,61 @@ Defined in `hope_gen_monad`, implemented as:
   `'a Option.t`, Rust's `Option<T>` and Haskell's `Data.Maybe a` [1].
 
 
-Containers
-----------
+### Containers
 
-### Dictionary
+A class of abstract data types to which we have exclusive access and can put
+things in and take them out. See issue #9
+
+- Operations on all abstract types of containers _should_ share a common lexicon
+- Concrete implementations of an abstract data type _must_ be swapable
+
+#### Dictionary
 
 Defined in `hope_gen_dictionary`, implemented as:
 
 - `hope_kv_list`. Equivalent to orddict/proplist. Operations implemented with
   BIFs from `lists` module, where possible
+
+TBD:
+- `hope_hash_tbl`. API around stdlib's `dict`
+- `hope_gb_dict`. API around stdlib's `gb_trees`
+
+#### Set
+
+TBD:
+- `hope_hash_set`. API around stdlib's `sets`
+- `hope_gb_set`. API around stdlib's `gb_sets`
+
+#### Queue
+
+TBD
+
+Should include both FIFO (queue) and LIFO (stack), so that user can swap if a
+different order is desired.
+
+Should we attempt to include priority queues or make them a separate abstract
+type?
+
+#### Sequence
+
+TBD
+
+Not yet defined and only partially implemented as:
+
+- `hope_list`
+
+
+### Resources
+
+A class of abstract systems to which we share access with an unknown number of
+users and can make requests to perform operations which may not get done for
+any number of reasons.
+
+#### Storage
+
+TBD
+
+See issue #11
 
 
 [1]: http://en.wikipedia.org/wiki/Option_type
