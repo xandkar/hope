@@ -36,6 +36,16 @@ else, these are influenced by Jane Street's Core of the OCaml world.
 - Names of public records _must_ be fully qualified, such as: `#hope_module_record{}`
 - Names of all modules _must_ be fully qualified, such as: `hope_module` (this
   should go without saying, but just to be sure...)
+- Keep the number of (anonymous) arguments "reasonably" low:
+    + up to 3 is normal
+    + 4 is suspicious but may be reasonable
+    + 5 is _very_ suspicious and probably unnecessary
+    + more than 5 is unacceptable, so consider reducing by:
+        1. revising abstractions, or, if not practical
+        2. creating a public record specifically for the purpose of passing
+           many arguents, which simulates labeled arguments. For an example see
+           https://github.com/ibnfirnas/oauth1_core where I used that technique
+           extensively (especially in oauth1_server.erl)
 
 
 Abstractions
