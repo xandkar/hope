@@ -15,6 +15,9 @@
 -callback get(t(K, V), K) ->
     hope_option:t(V).
 
+-callback get(t(K, V), K, V) ->
+    V.
+
 -callback set(t(K, V), K, V) ->
     t(K, V).
 

@@ -1,7 +1,5 @@
 -module(hope_dictionary_SUITE).
 
--include_lib("proper/include/proper.hrl").
-
 %% Callbacks
 -export(
     [ all/0
@@ -14,6 +12,7 @@
 -export(
     [ t_set_new/1
     , t_set_existing/1
+    , t_get/1
     , t_pop/1
     , t_fold/1
     , t_dictionary_specs/1
@@ -35,6 +34,7 @@ groups() ->
     Tests =
         [ t_set_new
         , t_set_existing
+        , t_get
         , t_pop
         , t_fold
         , t_dictionary_specs
@@ -52,6 +52,18 @@ end_per_group(_DictModule, _Cfg) ->
 %% =============================================================================
 %%  Test cases
 %% =============================================================================
+
+t_get(Cfg) ->
+    {some, DictModule} = hope_kv_list:get(Cfg, ?DICT_MODULE),
+    K1 = k1,
+    K2 = k2,
+    V1 = v1,
+    V2 = v2,
+    D = DictModule:set(DictModule:empty(), K1, V1),
+    {some, V1} = DictModule:get(D, K1),
+    V1         = DictModule:get(D, K1, V2),
+    none       = DictModule:get(D, K2),
+    V2         = DictModule:get(D, K2, V2).
 
 t_set_new(Cfg) ->
     {some, DictModule} = hope_kv_list:get(Cfg, ?DICT_MODULE),

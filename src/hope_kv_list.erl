@@ -12,6 +12,7 @@
 -export(
     [ empty/0
     , get/2
+    , get/3
     , set/3
     , update/3
     , pop/2
@@ -52,6 +53,12 @@ get(T, K) ->
     of  false  -> none
     ;   {K, V} -> {some, V}
     end.
+
+-spec get(t(K, V), K, V) ->
+    V.
+get(T, K, Default) ->
+    Vopt = get(T, K),
+    hope_option:get(Vopt, Default).
 
 -spec set(t(K, V), K, V) ->
     t(K, V).
