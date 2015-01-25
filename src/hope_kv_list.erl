@@ -3,6 +3,8 @@
 %%%----------------------------------------------------------------------------
 -module(hope_kv_list).
 
+-include_lib("hope_kv_list.hrl").
+
 -behavior(hope_gen_dictionary).
 
 -export_type(
@@ -22,13 +24,25 @@
     , fold/3
     , of_kv_list/1
     , to_kv_list/1
-    , validate_unique_presence/2  % Assume default optional parameter(s)
-    , validate_unique_presence/3  % Specify optional parameter(s)
+    , find_unique_presence_violations/2  % No optional keys
+    , find_unique_presence_violations/3  % Specify optional keys
+    , validate_unique_presence/2  % No optional keys
+    , validate_unique_presence/3  % Specify optional keys
     ]).
 
 
 -type t(K, V) ::
     [{K, V}].
+
+-type presence_violations(A) ::
+    % This is a hack to effectively parametarize the types of record fields.
+    % IMPORTANT: Make sure that the order of fields matches the definition of
+    % #hope_kv_list_presence_violations
+    { hope_kv_list_presence_violations
+    , [A]  % keys_missing
+    , [A]  % keys_duplicated
+    , [A]  % keys_unsupported
+    }.
 
 -type presence_error(A) ::
       {keys_missing     , [A]}
@@ -125,34 +139,57 @@ validate_unique_presence(T, KeysRequired) ->
 -spec validate_unique_presence(t(K, _V), [K], [K]) ->
     hope_result:t(ok, [presence_error(K)]).
 validate_unique_presence(T, KeysRequired, KeysOptional) ->
-    KeysSupported   = KeysRequired ++ KeysOptional,
-    KeysGiven       = [K || {K, _V} <- T],
-    KeysGivenUnique = lists:usort(KeysGiven),
-    KeysDups        = lists:usort(KeysGiven -- KeysGivenUnique),
-    KeysMissing     = KeysRequired -- KeysGivenUnique,
-    KeysUnsupported = KeysGivenUnique -- KeysSupported,
-    case {KeysDups, KeysMissing, KeysUnsupported}
-    of  {[], [], []} ->
+    case find_unique_presence_violations(T, KeysRequired, KeysOptional)
+    of  #hope_kv_list_presence_violations
+        { keys_missing     = []
+        , keys_duplicated  = []
+        , keys_unsupported = []
+        } ->
             {ok, ok}
-    ;   {Dups, Missing, Unsupported} ->
-            ErrorDups =
-                case Dups
-                of  []    -> []
-                ;   [_|_] -> [{keys_duplicated, Dups}]
-                end,
+    ;   #hope_kv_list_presence_violations
+        { keys_missing     = KeysMissing
+        , keys_duplicated  = KeysDuplicated
+        , keys_unsupported = KeysUnsupported
+        } ->
             ErrorMissing =
-                case Missing
+                case KeysMissing
                 of  []    -> []
-                ;   [_|_] -> [{keys_missing, Missing}]
+                ;   [_|_] -> [{keys_missing, KeysMissing}]
+                end,
+            ErrorDups =
+                case KeysDuplicated
+                of  []    -> []
+                ;   [_|_] -> [{keys_duplicated, KeysDuplicated}]
                 end,
             ErrorUnsupported =
-                case Unsupported
+                case KeysUnsupported
                 of  []    -> []
-                ;   [_|_] -> [{keys_unsupported, Unsupported}]
+                ;   [_|_] -> [{keys_unsupported, KeysUnsupported}]
                 end,
             Errors = ErrorDups ++ ErrorMissing ++ ErrorUnsupported,
             {error, Errors}
     end.
+
+-spec find_unique_presence_violations(t(K, _V), [K]) ->
+    presence_violations(K).
+find_unique_presence_violations(T, KeysRequired) ->
+    KeysOptional = [],
+    find_unique_presence_violations(T, KeysRequired, KeysOptional).
+
+-spec find_unique_presence_violations(t(K, _V), [K], [K]) ->
+    presence_violations(K).
+find_unique_presence_violations(T, KeysRequired, KeysOptional) ->
+    KeysSupported   = KeysRequired ++ KeysOptional,
+    KeysGiven       = [K || {K, _V} <- T],
+    KeysGivenUnique = lists:usort(KeysGiven),
+    KeysDuplicated  = lists:usort(KeysGiven -- KeysGivenUnique),
+    KeysMissing     = KeysRequired -- KeysGivenUnique,
+    KeysUnsupported = KeysGivenUnique -- KeysSupported,
+    #hope_kv_list_presence_violations
+    { keys_missing     = KeysMissing
+    , keys_duplicated  = KeysDuplicated
+    , keys_unsupported = KeysUnsupported
+    }.
 
 
 %% ============================================================================
