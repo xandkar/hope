@@ -10,6 +10,7 @@
     , map/3  % Tunable recursion limit
     , map_rev/2
     , map_slow/2
+    , first_match/2
     ]).
 
 
@@ -102,3 +103,13 @@ unique_preserve_order(L) ->
             end
         end,
     lists:reverse(lists:foldl(PrependIfNew, [], L)).
+
+-spec first_match([{Tag, fun((A) -> boolean())}], A) ->
+    hope_option:t(Tag).
+first_match([], _) ->
+    none;
+first_match([{Tag, F} | Tests], X) ->
+    case F(X)
+    of  true  -> {some, Tag}
+    ;   false -> first_match(Tests, X)
+    end.
