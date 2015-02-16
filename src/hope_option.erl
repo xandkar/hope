@@ -10,6 +10,7 @@
     [ put/2
     , get/2
     , return/1
+    , return/2
     , map/2
     , iter/2
     , pipe/2
@@ -27,10 +28,7 @@
 -spec put(A, fun((A) -> boolean())) ->
     t(A).
 put(X, F) ->
-    case F(X)
-    of  true  -> {some, X}
-    ;   false -> none
-    end.
+    return(X, F).
 
 -spec get(t(A), Default :: A) ->
     A.
@@ -41,6 +39,14 @@ get(none     , Y) -> Y.
     {some, A}.
 return(X) ->
     {some, X}.
+
+-spec return(A, fun((A) -> boolean())) ->
+    t(A).
+return(X, Condition) ->
+    case Condition(X)
+    of  true  -> {some, X}
+    ;   false -> none
+    end.
 
 -spec map(t(A), fun((A) -> (B))) ->
     t(B).
