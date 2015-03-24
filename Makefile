@@ -1,5 +1,5 @@
 .PHONY: \
-	ci \
+	travis_ci \
 	fresh-build \
 	compile \
 	clean \
@@ -9,7 +9,7 @@
 	dialyze \
 	test
 
-ci: \
+travis_ci: \
 	deps \
 	compile \
 	test

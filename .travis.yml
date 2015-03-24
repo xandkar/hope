@@ -10,4 +10,4 @@ otp_release:
     - R16B02
 
 script:
-    "make ci"
+    "make travis_ci"
