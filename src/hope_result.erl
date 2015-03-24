@@ -4,6 +4,8 @@
 
 -export_type(
     [ t/2
+    , exn_class/0
+    , exn_value/1
     ]).
 
 -export(
@@ -14,8 +16,17 @@
     , pipe/2
     , lift_exn/1
     , lift_exn/2
+    , lift_map_exn/3
     ]).
 
+-type exn_class() ::
+      error
+    | exit
+    | throw
+    .
+
+-type exn_value(A) ::
+    {exn_class(), A}.
 
 -type t(A, B) ::
       {ok, A}
@@ -65,33 +76,40 @@ pipe([F|Fs], X) ->
     end.
 
 -spec lift_exn(F) -> G
-    when F     :: fun((A)-> B)
-       , G     :: fun((A)-> t(B, {Class, Reason :: any()}))
-       , Class :: error
-                | exit
-                | throw
+    when F     :: fun((A) -> B)
+       , G     :: fun((A) -> t(B, exn_value(any())))
        .
 lift_exn(F) when is_function(F, 1) ->
-    fun(X) ->
-        try
-            {ok, F(X)}
-        catch Class:Reason ->
-            {error, {Class, Reason}}
-        end
-    end.
+    ID = fun hope_fun:id/1,
+    lift_map_exn(F, ID, ID).
 
--spec lift_exn(F, Label) -> G
-    when F     :: fun((A)-> B)
-       , G     :: fun((A)-> t(B, {Label, {Class, Reason :: any()}}))
-       , Class :: error
-                | exit
-                | throw
+-spec lift_exn(F, ErrorTag) -> G
+    when F :: fun((A) -> B)
+       , G :: fun((A) -> t(B, {ErrorTag, exn_value(any())}))
        .
-lift_exn(F, Label) when is_function(F, 1) ->
+lift_exn(F, ErrorTag) when is_function(F, 1) ->
+    ID = fun hope_fun:id/1,
+    Tag = fun (Reason) -> {ErrorTag, Reason} end,
+    lift_map_exn(F, ID, Tag).
+
+-spec lift_map_exn(F, MapOk, MapError) -> G
+    when F        :: fun((A) -> B)
+       , MapOk    :: fun((B) -> C)
+       , MapError :: fun((exn_value(any())) -> Error)
+       , G        :: fun((A) -> t(C, Error))
+       .
+lift_map_exn(F, MapOk, MapError) when is_function(F, 1) ->
     fun(X) ->
-        try
-            {ok, F(X)}
-        catch Class:Reason ->
-            tag_error({error, {Class, Reason}}, Label)
+        Result =
+            try
+                {ok, F(X)}
+            catch Class:Reason ->
+                {error, {Class, Reason}}
+            end,
+        % Applying maps separately as to not unintentionally catch an exception
+        % raised in a map.
+        case Result
+        of  {ok   , _}=Ok    -> map      (Ok   , MapOk)
+        ;   {error, _}=Error -> map_error(Error, MapError)
         end
     end.

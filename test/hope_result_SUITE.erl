@@ -14,6 +14,7 @@
     , t_pipe_error/1
     , t_hope_result_specs/1
     , t_lift_exn/1
+    , t_lift_map_exn/1
     , t_return/1
     , t_map/1
     , t_map_error/1
@@ -48,6 +49,7 @@ groups() ->
         ],
     LiftTests =
         [ t_lift_exn
+        , t_lift_map_exn
         ],
     OtherTests =
         [ t_return
@@ -100,6 +102,32 @@ t_lift_exn(_Cfg) ->
     H = hope_result:lift_exn(F, Label),
     {error, {Class, Reason}} = G(ok),
     {error, {Label, {Class, Reason}}} = H(ok).
+
+t_lift_map_exn(_Cfg) ->
+    FOk  = fun ({}) -> foo end,
+    FExn = fun ({}) -> throw(baz) end,
+    MapOk          = fun (foo)          -> bar end,
+    MapOkThrows    = fun (foo)          -> throw(exn_from_ok_map) end,
+    MapError       = fun ({throw, baz}) -> qux end,
+    MapErrorThrows = fun ({throw, baz}) -> throw(exn_from_error_map) end,
+    GOk          = hope_result:lift_map_exn(FOk , MapOk      , MapError),
+    GOkThrows    = hope_result:lift_map_exn(FOk , MapOkThrows, MapError),
+    GError       = hope_result:lift_map_exn(FExn, MapOk      , MapError),
+    GErrorThrows = hope_result:lift_map_exn(FExn, MapOk      , MapErrorThrows),
+    {ok, bar} = GOk({}),
+    {error, qux} = GError({}),
+    ok =
+        try
+            must_not_return = GOkThrows({})
+        catch throw:exn_from_ok_map ->
+                ok
+        end,
+    ok =
+        try
+            must_not_return = GErrorThrows({})
+        catch throw:exn_from_error_map ->
+                ok
+        end.
 
 t_return(_Cfg) ->
     X = foo,
