@@ -9,6 +9,13 @@
 	dialyze \
 	test
 
+all: \
+	clean \
+	deps \
+	compile \
+	test \
+	dialyze
+
 travis_ci: \
 	deps \
 	compile \
