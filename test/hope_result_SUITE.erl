@@ -1,8 +1,5 @@
 -module(hope_result_SUITE).
 
-%% TODO: Import only what is used.
--include_lib("proper/include/proper.hrl").
-
 %% Callbacks
 -export(
     [ all/0
@@ -19,6 +16,8 @@
     , t_lift_exn/1
     , t_return/1
     , t_map/1
+    , t_map_error/1
+    , t_tag_error/1
     ]).
 
 
@@ -53,6 +52,8 @@ groups() ->
     OtherTests =
         [ t_return
         , t_map
+        , t_map_error
+        , t_tag_error
         ],
     Properties = [parallel],
     [ {?GROUP_PIPE, Properties, PipeTests}
@@ -110,3 +111,16 @@ t_map(_Cfg) ->
     F = fun (foo) -> Y end,
     {ok, Y}    = hope_result:map({ok, X}, F),
     {error, X} = hope_result:map({error, X}, F).
+
+t_map_error(_Cfg) ->
+    X = foo,
+    Y = bar,
+    XtoY = fun (foo) -> Y end,
+    {ok   , X} = hope_result:map_error({ok   , X}, XtoY),
+    {error, Y} = hope_result:map_error({error, X}, XtoY).
+
+t_tag_error(_Cfg) ->
+    X = foo,
+    Tag = bar,
+    {ok   ,       X } = hope_result:tag_error({ok   , X}, Tag),
+    {error, {Tag, X}} = hope_result:tag_error({error, X}, Tag).
