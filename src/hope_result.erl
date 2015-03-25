@@ -10,7 +10,8 @@
 
 -export(
     [ return/1
-    , map/2
+    , map/2        % map/2 is alias for map_ok/2
+    , map_ok/2
     , map_error/2
     , tag_error/2
     , pipe/2
@@ -41,9 +42,14 @@ return(X) ->
 
 -spec map(t(A, Error), fun((A) -> (B))) ->
     t(B, Error).
-map({ok, X}, F) ->
+map({_, _}=T, F) ->
+    map_ok(T, F).
+
+-spec map_ok(t(A, Error), fun((A) -> (B))) ->
+    t(B, Error).
+map_ok({ok, X}, F) ->
     {ok, F(X)};
-map({error, _}=Error, _) ->
+map_ok({error, _}=Error, _) ->
     Error.
 
 -spec map_error(t(A, B), fun((B) -> (C))) ->
@@ -109,7 +115,7 @@ lift_map_exn(F, MapOk, MapError) when is_function(F, 1) ->
         % Applying maps separately as to not unintentionally catch an exception
         % raised in a map.
         case Result
-        of  {ok   , _}=Ok    -> map      (Ok   , MapOk)
+        of  {ok   , _}=Ok    -> map_ok   (Ok   , MapOk)
         ;   {error, _}=Error -> map_error(Error, MapError)
         end
     end.
