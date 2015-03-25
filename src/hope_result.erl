@@ -9,12 +9,15 @@
     ]).
 
 -export(
+    % Generic monad interface
     [ return/1
-    , map/2        % map/2 is alias for map_ok/2
+    , map/2     % map/2 is alias for map_ok/2
+    , pipe/2
+
+    % Specific to hope_result:t()
     , map_ok/2
     , map_error/2
     , tag_error/2
-    , pipe/2
     , lift_exn/1
     , lift_exn/2
     , lift_map_exn/3

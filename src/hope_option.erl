@@ -7,13 +7,16 @@
     ]).
 
 -export(
-    [ put/2
-    , get/2
-    , return/1
-    , return/2
+    % Generic monad interface
+    [ return/1
     , map/2
-    , iter/2
     , pipe/2
+
+    % Specific to hope_option:t()
+    , return/2
+    , put/2
+    , get/2
+    , iter/2
     , of_result/1
     , of_undefined/1
     ]).
