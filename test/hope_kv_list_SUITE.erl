@@ -43,7 +43,7 @@ t_validate_unique_presence(_Cfg) ->
     DictDups    = [{a, 1}, {b, 2}, {c, 3}, {a, 4}],
     DictMissing = [{a, 1}, {b, 2}],
 
-    {ok, ok} =
+    {ok, DictOk} =
         hope_kv_list:validate_unique_presence(DictOk, KeysRequired),
     #hope_kv_list_presence_violations
     { keys_missing     = []

@@ -131,14 +131,16 @@ of_kv_list(List) ->
     % TODO: Decide if validation is to be done here. Do so if yes.
     List.
 
--spec validate_unique_presence(t(K, _V), [K]) ->
-    hope_result:t(ok, [presence_error(K)]).
+-spec validate_unique_presence(T, [K]) ->
+    hope_result:t(T, [presence_error(K)])
+    when T :: t(K, _V).
 validate_unique_presence(T, KeysRequired) ->
     KeysOptional = [],
     validate_unique_presence(T, KeysRequired, KeysOptional).
 
 -spec validate_unique_presence(t(K, _V), [K], [K]) ->
-    hope_result:t(ok, [presence_error(K)]).
+    hope_result:t(T, [presence_error(K)])
+    when T :: t(K, _V).
 validate_unique_presence(T, KeysRequired, KeysOptional) ->
     case find_unique_presence_violations(T, KeysRequired, KeysOptional)
     of  #hope_kv_list_presence_violations
@@ -146,7 +148,7 @@ validate_unique_presence(T, KeysRequired, KeysOptional) ->
         , keys_duplicated  = []
         , keys_unsupported = []
         } ->
-            {ok, ok}
+            {ok, T}
     ;   #hope_kv_list_presence_violations{}=Violations ->
             {error, presence_violations_to_list(Violations)}
     end.
