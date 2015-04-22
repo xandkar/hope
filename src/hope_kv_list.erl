@@ -28,6 +28,7 @@
     , find_unique_presence_violations/3  % Specify optional keys
     , validate_unique_presence/2  % No optional keys
     , validate_unique_presence/3  % Specify optional keys
+    , presence_violations_to_list/1
     ]).
 
 
@@ -146,28 +147,8 @@ validate_unique_presence(T, KeysRequired, KeysOptional) ->
         , keys_unsupported = []
         } ->
             {ok, ok}
-    ;   #hope_kv_list_presence_violations
-        { keys_missing     = KeysMissing
-        , keys_duplicated  = KeysDuplicated
-        , keys_unsupported = KeysUnsupported
-        } ->
-            ErrorMissing =
-                case KeysMissing
-                of  []    -> []
-                ;   [_|_] -> [{keys_missing, KeysMissing}]
-                end,
-            ErrorDups =
-                case KeysDuplicated
-                of  []    -> []
-                ;   [_|_] -> [{keys_duplicated, KeysDuplicated}]
-                end,
-            ErrorUnsupported =
-                case KeysUnsupported
-                of  []    -> []
-                ;   [_|_] -> [{keys_unsupported, KeysUnsupported}]
-                end,
-            Errors = ErrorDups ++ ErrorMissing ++ ErrorUnsupported,
-            {error, Errors}
+    ;   #hope_kv_list_presence_violations{}=Violations ->
+            {error, presence_violations_to_list(Violations)}
     end.
 
 -spec find_unique_presence_violations(t(K, _V), [K]) ->
@@ -190,6 +171,30 @@ find_unique_presence_violations(T, KeysRequired, KeysOptional) ->
     , keys_duplicated  = KeysDuplicated
     , keys_unsupported = KeysUnsupported
     }.
+
+-spec presence_violations_to_list(presence_violations(K)) ->
+    [presence_error(K)].
+presence_violations_to_list(#hope_kv_list_presence_violations
+{ keys_missing     = KeysMissing
+, keys_duplicated  = KeysDuplicated
+, keys_unsupported = KeysUnsupported
+}) ->
+    ErrorMissing =
+        case KeysMissing
+        of  []    -> []
+        ;   [_|_] -> [{keys_missing, KeysMissing}]
+        end,
+    ErrorDups =
+        case KeysDuplicated
+        of  []    -> []
+        ;   [_|_] -> [{keys_duplicated, KeysDuplicated}]
+        end,
+    ErrorUnsupported =
+        case KeysUnsupported
+        of  []    -> []
+        ;   [_|_] -> [{keys_unsupported, KeysUnsupported}]
+        end,
+    ErrorDups ++ ErrorMissing ++ ErrorUnsupported.
 
 
 %% ============================================================================
