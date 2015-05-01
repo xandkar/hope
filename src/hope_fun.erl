@@ -13,7 +13,7 @@ id(X) ->
 -spec curry(fun()) ->
     fun().
 curry(F) ->
-    {some, Arity} = hope_kv_list:get(erlang:fun_info(F), arity),
+    {arity, Arity} = erlang:fun_info(F, arity),
     curry(F, [], Arity).
 
 -spec curry(fun(), list(), integer()) ->
