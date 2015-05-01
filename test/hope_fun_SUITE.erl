@@ -8,8 +8,10 @@
 
 %% Test cases
 -export(
-    [ t_id/1
+    [ t_specs/1
+    , t_id/1
     , t_curry/1
+    , t_compose/1
     ]).
 
 
@@ -26,8 +28,10 @@ all() ->
 
 groups() ->
     Tests =
-        [ t_id
+        [ t_specs
+        , t_id
         , t_curry
+        , t_compose
         ],
     Properties = [parallel],
     [ {?GROUP, Properties, Tests}
@@ -37,6 +41,9 @@ groups() ->
 %% =============================================================================
 %%  Test cases
 %% =============================================================================
+
+t_specs(_) ->
+    [] = proper:check_specs(hope_fun).
 
 t_id(_Cfg) ->
     X = foo,
@@ -58,3 +65,12 @@ t_curry(_Cfg) ->
     H2 = H1(a),
     H  = H2(b),
     {a, b, c} = H(c).
+
+t_compose(_Cfg) ->
+    A2B = fun (a) -> b end,
+    B2C = fun (b) -> c end,
+    C2D = fun (c) -> d end,
+    Fs = [C2D, B2C, A2B],
+    d = (hope_fun:compose       (              Fs  ))(a),
+    d = (hope_fun:compose_right (              Fs  ))(a),
+    d = (hope_fun:compose_left  (lists:reverse(Fs) ))(a).
