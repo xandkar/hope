@@ -6,6 +6,7 @@
     , compose/1  % alias for compose_right/1
     , compose_right/1
     , compose_left/1
+    , thread/2
     ]).
 
 -spec id(A) ->
@@ -40,6 +41,12 @@ compose_right(Fs) ->
     fun((A) -> B).
 compose_left(Fs) ->
     compose_given_fold(Fs, fun lists:foldl/3).
+
+-spec thread([fun((A) -> B)], A) ->
+    B.
+thread(Fs, X) ->
+    F = compose_left(Fs),
+    F(X).
 
 
 %% ============================================================================
