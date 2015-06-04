@@ -15,6 +15,7 @@
     , t_map/1
     , t_iter/1
     , t_pipe/1
+    , t_validate/1
     ]).
 
 
@@ -38,6 +39,7 @@ groups() ->
         , t_map
         , t_iter
         , t_pipe
+        , t_validate
         ],
     Properties = [parallel],
     [ {?GROUP, Properties, Tests}
@@ -99,3 +101,9 @@ t_of_undefined(_Cfg) ->
     {some, Bar} = hope_option:of_undefined(Bar),
     {some, Baz} = hope_option:of_undefined(Baz),
     none        = hope_option:of_undefined(undefined).
+
+t_validate(_Cfg) ->
+    IsFoo = fun (X) -> X =:= foo end,
+    none = hope_option:validate(none, IsFoo),
+    none = hope_option:validate({some, bar}, IsFoo),
+    {some, foo} = hope_option:validate({some, foo}, IsFoo).

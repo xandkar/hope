@@ -19,6 +19,7 @@
     , iter/2
     , of_result/1
     , of_undefined/1
+    , validate/2
     ]).
 
 
@@ -80,3 +81,13 @@ of_result({error, _}) -> none.
     t(A).
 of_undefined(undefined) -> none;
 of_undefined(X)         -> {some, X}.
+
+-spec validate(t(A), fun((A) -> boolean())) ->
+    t(A).
+validate(none, _) ->
+    none;
+validate({some, X}=T, F) ->
+    case F(X)
+    of  false -> none
+    ;   true  -> T
+    end.
