@@ -18,6 +18,9 @@
 -callback get(t(K, V), K, V) ->
     V.
 
+-callback get(t(K, V), K, V, fun((V) -> boolean())) ->
+    V.
+
 -callback set(t(K, V), K, V) ->
     t(K, V).
 

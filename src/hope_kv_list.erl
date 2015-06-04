@@ -13,8 +13,9 @@
 
 -export(
     [ empty/0
-    , get/2
-    , get/3
+    , get/2  % get option
+    , get/3  % get existing or default
+    , get/4  % get existing if valid, or default
     , set/3
     , update/3
     , pop/2
@@ -74,6 +75,13 @@ get(T, K) ->
 get(T, K, Default) ->
     Vopt = get(T, K),
     hope_option:get(Vopt, Default).
+
+-spec get(t(K, V), K, V, fun((V) -> boolean())) ->
+    V.
+get(T, K, Default, IsValid) ->
+    VOpt1 = get(T, K),
+    VOpt2 = hope_option:validate(VOpt1, IsValid),
+    hope_option:get(VOpt2, Default).
 
 -spec set(t(K, V), K, V) ->
     t(K, V).

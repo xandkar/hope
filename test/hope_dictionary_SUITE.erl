@@ -63,7 +63,9 @@ t_get(Cfg) ->
     {some, V1} = DictModule:get(D, K1),
     V1         = DictModule:get(D, K1, V2),
     none       = DictModule:get(D, K2),
-    V2         = DictModule:get(D, K2, V2).
+    V2         = DictModule:get(D, K2, V2),
+    default    = DictModule:get(D, K1, default, fun (X) -> X =:= foo end),
+    V1         = DictModule:get(D, K1, default, fun (X) -> X =:= V1 end).
 
 t_set_new(Cfg) ->
     {some, DictModule} = hope_kv_list:get(Cfg, ?DICT_MODULE),
