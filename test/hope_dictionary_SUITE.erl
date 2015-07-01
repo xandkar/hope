@@ -16,6 +16,7 @@
     , t_pop/1
     , t_fold/1
     , t_dictionary_specs/1
+    , t_has_key/1
     ]).
 
 
@@ -38,6 +39,7 @@ groups() ->
         , t_pop
         , t_fold
         , t_dictionary_specs
+        , t_has_key
         ],
     Properties = [parallel],
     [{?DICT_MODULE_KV_LIST, Properties, Tests}].
@@ -107,3 +109,13 @@ t_fold(Cfg) ->
 t_dictionary_specs(Cfg) ->
     {some, DictModule} = hope_kv_list:get(Cfg, ?DICT_MODULE),
     [] = proper:check_specs(DictModule).
+
+t_has_key(Cfg) ->
+    {some, DictModule} = hope_kv_list:get(Cfg, ?DICT_MODULE),
+    D = DictModule:of_kv_list([{a, 1}, {b, 2}, {c, 3}]),
+    true  = DictModule:has_key(D, a),
+    true  = DictModule:has_key(D, b),
+    true  = DictModule:has_key(D, c),
+    false = DictModule:has_key(D, d),
+    false = DictModule:has_key(D, e),
+    false = DictModule:has_key(D, f).

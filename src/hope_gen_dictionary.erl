@@ -48,3 +48,6 @@
 
 -callback to_kv_list(t(K, V)) ->
     [{K, V}].
+
+-callback has_key(t(K, _), K) ->
+    boolean().

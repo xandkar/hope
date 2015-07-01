@@ -25,6 +25,7 @@
     , fold/3
     , of_kv_list/1
     , to_kv_list/1
+    , has_key/2
     , find_unique_presence_violations/2  % No optional keys
     , find_unique_presence_violations/3  % Specify optional keys
     , validate_unique_presence/2  % No optional keys
@@ -206,6 +207,10 @@ presence_violations_to_list(#hope_kv_list_presence_violations
         end,
     ErrorDups ++ ErrorMissing ++ ErrorUnsupported.
 
+-spec has_key(t(K, _), K) ->
+    boolean().
+has_key(T, K1) ->
+    lists:any(fun ({K2, _}) -> K1 =:= K2 end, T).
 
 %% ============================================================================
 %% Helpers
