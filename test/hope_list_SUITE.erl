@@ -16,6 +16,7 @@
     , t_map_slow/1
     , t_map/1
     , t_map_3/1
+    , t_map_result/1
     ]).
 
 
@@ -39,6 +40,7 @@ groups() ->
         , t_map_slow
         , t_map
         , t_map_3
+        , t_map_result
         ],
     Properties = [parallel],
     [{?GROUP, Properties, Tests}].
@@ -89,3 +91,13 @@ prop_unique_preserve_order() ->
 
 t_hope_list_specs(_) ->
     [] = proper:check_specs(hope_list).
+
+t_map_result(_Cfg) ->
+    AssertPositive =
+        fun (I) when I > 0 -> {ok, I}; (_) -> {error, negative} end,
+    AllPositives = lists:seq(1, 5),
+    AllNegatives = lists:seq(-5, -1),
+    Mixed = lists:seq(-5, 5),
+    {ok, AllPositives} = hope_list:map_result(AllPositives, AssertPositive),
+    {error, negative}  = hope_list:map_result(AllNegatives, AssertPositive),
+    {error, negative}  = hope_list:map_result(Mixed, AssertPositive).

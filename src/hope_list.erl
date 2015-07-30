@@ -10,6 +10,7 @@
     , map/3  % Tunable recursion limit
     , map_rev/2
     , map_slow/2
+    , map_result/2  % Not tail-recursive
     , first_match/2
     ]).
 
@@ -66,7 +67,6 @@ map([X1, X2, X3, X4, X5 | Xs], F, RecursionLimit, RecursionCount) ->
         end,
     [Y1, Y2, Y3, Y4, Y5 | Ys].
 
-
 %% @doc lists:reverse(map_rev(L, F))
 %% @end
 -spec map_slow([A], fun((A) -> (B))) ->
@@ -91,6 +91,22 @@ map_rev_acc([X|Xs], F, Ys) ->
     Y = F(X),
     map_rev_acc(Xs, F, [Y|Ys]).
 
+-spec map_result([A], fun((A) -> (hope_result:t(B, C)))) ->
+    hope_result:t([B], C).
+map_result([], _) ->
+    {ok, []};
+map_result([X | Xs], F) ->
+    case F(X)
+    of  {ok, Y} ->
+            case map_result(Xs, F)
+            of  {ok, Ys} ->
+                    {ok, [Y | Ys]}
+            ;   {error, _}=Error ->
+                    Error
+            end
+    ;   {error, _}=Error ->
+            Error
+    end.
 
 -spec unique_preserve_order(t(A)) ->
     t(A).
