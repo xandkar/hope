@@ -1,6 +1,6 @@
 -module(hope_list_SUITE).
 
--include_lib("proper/include/proper.hrl").
+-include_lib("proper/include/proper_common.hrl").
 
 %% Callbacks
 -export(
@@ -54,35 +54,35 @@ t_map_rev(_Cfg) ->
     ?PROPTEST(map_rev).
 
 map_rev() ->
-    ?FORALL({L, F}, {list(integer()), function([integer()], term())},
+    ?FORALL({L, F}, {proper_types:list(proper_types:integer()), proper_types:function([proper_types:integer()], proper_types:term())},
             hope_list:map_rev(L, F) == lists:reverse(lists:map(F, L))).
 
 t_map_slow(_Cfg) ->
     ?PROPTEST(map_slow).
 
 map_slow() ->
-    ?FORALL({L, F}, {list(integer()), function([integer()], term())},
+    ?FORALL({L, F}, {proper_types:list(proper_types:integer()), proper_types:function([proper_types:integer()], proper_types:term())},
             hope_list:map_slow(L, F) == lists:map(F, L)).
 
 t_map(_Cfg) ->
     ?PROPTEST(map).
 
 map() ->
-    ?FORALL({L, F}, {list(integer()), function([integer()], term())},
+    ?FORALL({L, F}, {proper_types:list(proper_types:integer()), proper_types:function([proper_types:integer()], proper_types:term())},
             hope_list:map(L, F) == lists:map(F, L)).
 
 t_map_3(_Cfg) ->
     ?PROPTEST(map_3).
 
 map_3() ->
-    ?FORALL({L, F, N}, {list(integer()), function([integer()], term()), non_neg_integer()},
+    ?FORALL({L, F, N}, {proper_types:list(proper_types:integer()), proper_types:function([proper_types:integer()], proper_types:term()), proper_types:non_neg_integer()},
             hope_list:map(L, F, N) == lists:map(F, L)).
 
 t_unique_preserve_order(_Cfg) ->
     ?PROPTEST(prop_unique_preserve_order).
 
 prop_unique_preserve_order() ->
-    ?FORALL(L, list(),
+    ?FORALL(L, proper_types:list(),
             begin
                 Duplicates = L -- lists:usort(L),
                 hope_list:unique_preserve_order(L) ==
