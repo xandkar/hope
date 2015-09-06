@@ -25,7 +25,7 @@
 
 -define(GROUP , hope_list).
 
--define(CHECK(F), true = proper:quickcheck(F())).
+-define(TEST(TestSpec), true = proper:quickcheck(TestSpec)).
 
 -define(type, proper_types).
 
@@ -89,54 +89,39 @@ t_manual_map_slow(_Cfg) ->
 %% =============================================================================
 
 t_auto_map_rev(_Cfg) ->
-    ?CHECK(proper_spec_map_rev).
+    ?TEST(?FORALL({L, F}, {type_l(), type_f()},
+        hope_list:map_rev(L, F) == lists:reverse(lists:map(F, L))
+    )).
 
 t_auto_map_slow(_Cfg) ->
-    ?CHECK(proper_spec_map_slow).
+    ?TEST(?FORALL({L, F}, {type_l(), type_f()},
+        hope_list:map_slow(L, F) == lists:map(F, L)
+    )).
 
 t_auto_map(_Cfg) ->
-    ?CHECK(proper_spec_map).
+    ?TEST(?FORALL({L, F}, {type_l(), type_f()},
+        hope_list:map(L, F) == lists:map(F, L)
+    )).
 
 t_auto_map_3(_Cfg) ->
-    ?CHECK(proper_spec_map_3).
+    ?TEST(?FORALL({L, F, N}, {type_l(), type_f(), ?type:non_neg_integer()},
+        hope_list:map(L, F, N) == lists:map(F, L)
+    )).
 
 t_auto_unique_preserve_order(_Cfg) ->
-    ?CHECK(proper_spec_prop_unique_preserve_order).
+    ?TEST(?FORALL(L, ?type:list(),
+    begin
+        Duplicates = L -- lists:usort(L),
+        hope_list:unique_preserve_order(L) ==
+            lists:reverse(lists:reverse(L) -- Duplicates)
+    end)).
 
 t_auto_hope_list_specs(_Cfg) ->
     [] = proper:check_specs(hope_list).
 
 %% ============================================================================
-%% PropEr test specs
+%% Common types
 %% ============================================================================
-
-proper_spec_map_rev() ->
-    ?FORALL({L, F}, {type_l(), type_f()},
-        hope_list:map_rev(L, F) == lists:reverse(lists:map(F, L))
-    ).
-
-proper_spec_map_slow() ->
-    ?FORALL({L, F}, {type_l(), type_f()},
-        hope_list:map_slow(L, F) == lists:map(F, L)
-    ).
-
-proper_spec_map() ->
-    ?FORALL({L, F}, {type_l(), type_f()},
-        hope_list:map(L, F) == lists:map(F, L)
-    ).
-
-proper_spec_map_3() ->
-    ?FORALL({L, F, N}, {type_l(), type_f(), ?type:non_neg_integer()},
-        hope_list:map(L, F, N) == lists:map(F, L)
-    ).
-
-proper_spec_prop_unique_preserve_order() ->
-    ?FORALL(L, ?type:list(),
-    begin
-        Duplicates = L -- lists:usort(L),
-        hope_list:unique_preserve_order(L) ==
-            lists:reverse(lists:reverse(L) -- Duplicates)
-    end).
 
 type_l() ->
     ?type:list(?type:integer()).
