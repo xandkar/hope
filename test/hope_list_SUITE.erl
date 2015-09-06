@@ -112,8 +112,9 @@ t_auto_unique_preserve_order(_Cfg) ->
     ?TEST(?FORALL(L, ?type:list(),
     begin
         Duplicates = L -- lists:usort(L),
-        hope_list:unique_preserve_order(L) ==
-            lists:reverse(lists:reverse(L) -- Duplicates)
+        UniquesInOrderA = lists:reverse(lists:reverse(L) -- Duplicates),
+        UniquesInOrderB = hope_list:unique_preserve_order(L),
+        UniquesInOrderA == UniquesInOrderB
     end)).
 
 t_auto_hope_list_specs(_Cfg) ->
