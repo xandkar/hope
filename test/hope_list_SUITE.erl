@@ -10,13 +10,13 @@
 
 %% Test cases
 -export(
-    [ t_unique_preserve_order/1
-    , t_hope_list_specs/1
-    , t_map_rev/1
-    , t_map_slow/1
-    , t_map/1
-    , t_map_3/1
-    , t_map_result/1
+    [ t_auto_hope_list_specs/1
+    , t_auto_map/1
+    , t_auto_map_3/1
+    , t_auto_map_rev/1
+    , t_auto_map_slow/1
+    , t_auto_unique_preserve_order/1
+    , t_manual_map_result/1
     ]).
 
 
@@ -36,41 +36,22 @@ all() ->
 
 groups() ->
     Tests =
-        [ t_unique_preserve_order
-        , t_hope_list_specs
-        , t_map_rev
-        , t_map_slow
-        , t_map
-        , t_map_3
-        , t_map_result
+        [ t_auto_hope_list_specs
+        , t_auto_map
+        , t_auto_map_3
+        , t_auto_map_rev
+        , t_auto_map_slow
+        , t_auto_unique_preserve_order
+        , t_manual_map_result
         ],
     Properties = [parallel],
     [{?GROUP, Properties, Tests}].
 
-
 %% =============================================================================
-%%  Test cases
+%%  Manual test cases
 %% =============================================================================
 
-t_map_rev(_Cfg) ->
-    ?CHECK(proper_spec_map_rev).
-
-t_map_slow(_Cfg) ->
-    ?CHECK(proper_spec_map_slow).
-
-t_map(_Cfg) ->
-    ?CHECK(proper_spec_map).
-
-t_map_3(_Cfg) ->
-    ?CHECK(proper_spec_map_3).
-
-t_unique_preserve_order(_Cfg) ->
-    ?CHECK(proper_spec_prop_unique_preserve_order).
-
-t_hope_list_specs(_Cfg) ->
-    [] = proper:check_specs(hope_list).
-
-t_map_result(_Cfg) ->
+t_manual_map_result(_Cfg) ->
     AssertPositive =
         fun (I) when I > 0 -> {ok, I}; (_) -> {error, negative} end,
     AllPositives = lists:seq(1, 5),
@@ -79,6 +60,28 @@ t_map_result(_Cfg) ->
     {ok, AllPositives} = hope_list:map_result(AllPositives, AssertPositive),
     {error, negative}  = hope_list:map_result(AllNegatives, AssertPositive),
     {error, negative}  = hope_list:map_result(Mixed, AssertPositive).
+
+%% =============================================================================
+%%  Generated test cases
+%% =============================================================================
+
+t_auto_map_rev(_Cfg) ->
+    ?CHECK(proper_spec_map_rev).
+
+t_auto_map_slow(_Cfg) ->
+    ?CHECK(proper_spec_map_slow).
+
+t_auto_map(_Cfg) ->
+    ?CHECK(proper_spec_map).
+
+t_auto_map_3(_Cfg) ->
+    ?CHECK(proper_spec_map_3).
+
+t_auto_unique_preserve_order(_Cfg) ->
+    ?CHECK(proper_spec_prop_unique_preserve_order).
+
+t_auto_hope_list_specs(_Cfg) ->
+    [] = proper:check_specs(hope_list).
 
 %% ============================================================================
 %% PropEr test specs
