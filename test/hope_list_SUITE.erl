@@ -22,7 +22,7 @@
 
 -define(GROUP , hope_list).
 
--define(PROPTEST(A), true = proper:quickcheck(A())).
+-define(CHECK(F), true = proper:quickcheck(F())).
 
 -define(type, proper_types).
 
@@ -53,45 +53,21 @@ groups() ->
 %% =============================================================================
 
 t_map_rev(_Cfg) ->
-    ?PROPTEST(map_rev).
-
-map_rev() ->
-    ?FORALL({L, F}, {?type:list(?type:integer()), ?type:function([?type:integer()], ?type:term())},
-            hope_list:map_rev(L, F) == lists:reverse(lists:map(F, L))).
+    ?CHECK(proper_spec_map_rev).
 
 t_map_slow(_Cfg) ->
-    ?PROPTEST(map_slow).
-
-map_slow() ->
-    ?FORALL({L, F}, {?type:list(?type:integer()), ?type:function([?type:integer()], ?type:term())},
-            hope_list:map_slow(L, F) == lists:map(F, L)).
+    ?CHECK(proper_spec_map_slow).
 
 t_map(_Cfg) ->
-    ?PROPTEST(map).
-
-map() ->
-    ?FORALL({L, F}, {?type:list(?type:integer()), ?type:function([?type:integer()], ?type:term())},
-            hope_list:map(L, F) == lists:map(F, L)).
+    ?CHECK(proper_spec_map).
 
 t_map_3(_Cfg) ->
-    ?PROPTEST(map_3).
-
-map_3() ->
-    ?FORALL({L, F, N}, {?type:list(?type:integer()), ?type:function([?type:integer()], ?type:term()), ?type:non_neg_integer()},
-            hope_list:map(L, F, N) == lists:map(F, L)).
+    ?CHECK(proper_spec_map_3).
 
 t_unique_preserve_order(_Cfg) ->
-    ?PROPTEST(prop_unique_preserve_order).
+    ?CHECK(proper_spec_prop_unique_preserve_order).
 
-prop_unique_preserve_order() ->
-    ?FORALL(L, ?type:list(),
-            begin
-                Duplicates = L -- lists:usort(L),
-                hope_list:unique_preserve_order(L) ==
-                    lists:reverse(lists:reverse(L) -- Duplicates)
-            end).
-
-t_hope_list_specs(_) ->
+t_hope_list_specs(_Cfg) ->
     [] = proper:check_specs(hope_list).
 
 t_map_result(_Cfg) ->
@@ -103,3 +79,41 @@ t_map_result(_Cfg) ->
     {ok, AllPositives} = hope_list:map_result(AllPositives, AssertPositive),
     {error, negative}  = hope_list:map_result(AllNegatives, AssertPositive),
     {error, negative}  = hope_list:map_result(Mixed, AssertPositive).
+
+%% ============================================================================
+%% PropEr test specs
+%% ============================================================================
+
+proper_spec_map_rev() ->
+    ?FORALL({L, F}, {type_l(), type_f()},
+        hope_list:map_rev(L, F) == lists:reverse(lists:map(F, L))
+    ).
+
+proper_spec_map_slow() ->
+    ?FORALL({L, F}, {type_l(), type_f()},
+        hope_list:map_slow(L, F) == lists:map(F, L)
+    ).
+
+proper_spec_map() ->
+    ?FORALL({L, F}, {type_l(), type_f()},
+        hope_list:map(L, F) == lists:map(F, L)
+    ).
+
+proper_spec_map_3() ->
+    ?FORALL({L, F, N}, {type_l(), type_f(), ?type:non_neg_integer()},
+        hope_list:map(L, F, N) == lists:map(F, L)
+    ).
+
+proper_spec_prop_unique_preserve_order() ->
+    ?FORALL(L, ?type:list(),
+    begin
+        Duplicates = L -- lists:usort(L),
+        hope_list:unique_preserve_order(L) ==
+            lists:reverse(lists:reverse(L) -- Duplicates)
+    end).
+
+type_l() ->
+    ?type:list(?type:integer()).
+
+type_f() ->
+    ?type:function([?type:integer()], ?type:term()).
