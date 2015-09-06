@@ -16,7 +16,10 @@
     , t_auto_map_rev/1
     , t_auto_map_slow/1
     , t_auto_unique_preserve_order/1
+    , t_manual_map/1
     , t_manual_map_result/1
+    , t_manual_map_rev/1
+    , t_manual_map_slow/1
     ]).
 
 
@@ -42,7 +45,10 @@ groups() ->
         , t_auto_map_rev
         , t_auto_map_slow
         , t_auto_unique_preserve_order
+        , t_manual_map
         , t_manual_map_result
+        , t_manual_map_rev
+        , t_manual_map_slow
         ],
     Properties = [parallel],
     [{?GROUP, Properties, Tests}].
@@ -50,6 +56,13 @@ groups() ->
 %% =============================================================================
 %%  Manual test cases
 %% =============================================================================
+
+t_manual_map(_Cfg) ->
+    F = fun (N) -> N + 1 end,
+    Xs = lists:seq(1, 5010),
+    Ys = lists:map(F, Xs),
+    Ys = hope_list:map(Xs, F),
+    [] = hope_list:map([], F).
 
 t_manual_map_result(_Cfg) ->
     AssertPositive =
@@ -60,6 +73,16 @@ t_manual_map_result(_Cfg) ->
     {ok, AllPositives} = hope_list:map_result(AllPositives, AssertPositive),
     {error, negative}  = hope_list:map_result(AllNegatives, AssertPositive),
     {error, negative}  = hope_list:map_result(Mixed, AssertPositive).
+
+t_manual_map_rev(_Cfg) ->
+    F = fun (N) -> N + 1 end,
+    [4, 3, 2] = hope_list:map_rev([1, 2, 3], F),
+    []        = hope_list:map_rev([], F).
+
+t_manual_map_slow(_Cfg) ->
+    F = fun (N) -> N + 1 end,
+    [2, 3, 4] = hope_list:map_slow([1, 2, 3], F),
+    []        = hope_list:map_slow([], F).
 
 %% =============================================================================
 %%  Generated test cases
