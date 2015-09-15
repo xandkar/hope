@@ -12,15 +12,13 @@
     , map_slow/2
     , map_result/2  % Not tail-recursive
     , first_match/2
+    , divide/2
     ]).
-
 
 -define(DEFAULT_RECURSION_LIMIT, 1000).
 
-
 -type t(A) ::
     [A].
-
 
 %% @doc Tail-recursive equivalent of lists:map/2
 %% @end
@@ -73,7 +71,6 @@ map([X1, X2, X3, X4, X5 | Xs], F, RecursionLimit, RecursionCount) ->
     [B].
 map_slow(Xs, F) ->
     lists:reverse(map_rev(Xs, F)).
-
 
 %% @doc Tail-recursive alternative to lists:map/2, which accumulates and
 %% returns list in reverse order.
@@ -129,3 +126,28 @@ first_match([{Tag, F} | Tests], X) ->
     of  true  -> {some, Tag}
     ;   false -> first_match(Tests, X)
     end.
+
+%% @doc Divide list into sublists of up to a requested size + a remainder.
+%% Order unspecified. Size < 1 raises an error:
+%% `hope_list__divide__size_must_be_a_positive_integer'
+%% @end
+-spec divide([A], pos_integer()) ->
+    [[A]].
+divide(_, Size) when Size < 1 orelse not is_integer(Size) ->
+    % Q: Why?
+    % A: For N < 0, what does it mean to have a negative-sized chunk?
+    %    For N = 0, we can imagine that a single chunk is an empty list, but,
+    %    how many such chunks should we produce?
+    % This is pretty-much equivalnet to the problem of deviding something by 0.
+    error(hope_list__divide__size_must_be_a_positive_integer);
+divide([], _) ->
+    [];
+divide([X1 | Xs], MaxChunkSize) ->
+    MoveIntoChunks =
+        fun (X2, {Chunk, Chunks, ChunkSize}) when ChunkSize >= MaxChunkSize ->
+                {[X2], [Chunk | Chunks], 1}
+        ;   (X2, {Chunk, Chunks, ChunkSize}) ->
+                {[X2 | Chunk], Chunks, ChunkSize + 1}
+        end,
+    {Chunk, Chunks, _} = lists:foldl(MoveIntoChunks, {[X1], [], 1}, Xs),
+    [Chunk | Chunks].

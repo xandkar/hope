@@ -20,6 +20,7 @@
     , t_manual_map_result/1
     , t_manual_map_rev/1
     , t_manual_map_slow/1
+    , t_manual_divide/1
     ]).
 
 
@@ -49,6 +50,7 @@ groups() ->
         , t_manual_map_result
         , t_manual_map_rev
         , t_manual_map_slow
+        , t_manual_divide
         ],
     Properties = [parallel],
     [{?GROUP, Properties, Tests}].
@@ -83,6 +85,35 @@ t_manual_map_slow(_Cfg) ->
     F = fun (N) -> N + 1 end,
     [2, 3, 4] = hope_list:map_slow([1, 2, 3], F),
     []        = hope_list:map_slow([], F).
+
+t_manual_divide(_Cfg) ->
+    try
+        hope_list:divide([a, b, c], -1)
+    catch
+        error:hope_list__divide__size_must_be_a_positive_integer -> ok
+    end,
+    try
+        hope_list:divide([a, b, c], 0)
+    catch
+        error:hope_list__divide__size_must_be_a_positive_integer -> ok
+    end,
+    [[c], [b], [a]] = hope_list:divide([a, b, c], 1),
+    [[c], [b, a]]   = hope_list:divide([a, b, c], 2),
+    [[c, b, a]]     = hope_list:divide([a, b, c], 3),
+    [[c, b, a]]     = hope_list:divide([a, b, c], 4),
+    [[c, b, a]]     = hope_list:divide([a, b, c], 5),
+    try
+        hope_list:divide([], 0)
+    catch
+        error:hope_list__divide__size_must_be_a_positive_integer -> ok
+    end,
+    try
+        hope_list:divide([], -1)
+    catch
+        error:hope_list__divide__size_must_be_a_positive_integer -> ok
+    end,
+    [[f, e], [d,   c], [b, a]] = hope_list:divide([a, b, c, d, e, f], 2),
+    [[f, e,   d], [c,   b, a]] = hope_list:divide([a, b, c, d, e, f], 3).
 
 %% =============================================================================
 %%  Generated test cases
