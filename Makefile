@@ -1,3 +1,5 @@
+REBAR := rebar --config ./rebar_test_build.config
+
 .PHONY: \
 	travis_ci \
 	fresh-build \
@@ -26,23 +28,23 @@ fresh-build: \
 	compile
 
 compile:
-	@rebar compile
+	@$(REBAR) compile
 
 clean:
-	@rebar clean
+	@$(REBAR) clean
 
 deps: \
 	deps-get \
 	deps-update
 
 deps-get:
-	@rebar get-deps
+	@$(REBAR) get-deps
 
 deps-update:
-	@rebar update-deps
+	@$(REBAR) update-deps
 
 dialyze:
 	@dialyzer ebin
 
 test:
-	@rebar ct skip_deps=true --verbose=0
+	@$(REBAR) ct skip_deps=true --verbose=0
