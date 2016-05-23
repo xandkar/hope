@@ -105,7 +105,7 @@ pop(T1, K) ->
     ;   false               -> {none     , T1}
     end.
 
--spec iter(t(K, V), fun((K, V) -> ok)) ->
+-spec iter(t(K, V), fun((K, V) -> any())) ->
     ok.
 iter(T, F1) ->
     F2 = lift_map(F1),

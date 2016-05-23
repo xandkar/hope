@@ -39,7 +39,7 @@
 -callback fold(t(K, V), fun((K, V, Acc) -> Acc), Acc) ->
     Acc.
 
--callback iter(t(K, V), fun((K, V) -> ok)) ->
+-callback iter(t(K, V), fun((K, V) -> any())) ->
     ok.
 
 %% TODO: Decide if validation is to be done. If yes - wrap in hope_result:t/1

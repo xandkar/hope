@@ -57,10 +57,13 @@ return(X, Condition) ->
 map({some, X}, F) -> {some, F(X)};
 map(none     , _) -> none.
 
--spec iter(t(A), fun((A) -> (ok))) ->
+-spec iter(t(A), fun((A) -> (any()))) ->
     ok.
-iter({some, X}, F) -> ok = F(X);
-iter(none     , _) -> ok.
+iter({some, X}, F) ->
+    _ = F(X),
+    ok;
+iter(none, _) ->
+    ok.
 
 -spec pipe([fun((A) -> t(B))], A) ->
     t(B).
