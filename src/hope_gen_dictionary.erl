@@ -40,7 +40,7 @@
     Acc.
 
 -callback iter(t(K, V), fun((K, V) -> any())) ->
-    ok.
+    {}.
 
 %% TODO: Decide if validation is to be done. If yes - wrap in hope_result:t/1
 -callback of_kv_list([{K, V}]) ->

@@ -66,12 +66,12 @@ t_map(_Cfg) ->
 
 t_iter(_Cfg) ->
     Key = key,
-    Put = fun (Val) -> _ = put(Key, Val), ok end,
+    Put = fun (Val) -> put(Key, Val) end,
     Get = fun () -> get(Key) end,
     Val = foo,
-    ok = hope_option:iter(none       , Put),
+    {} = hope_option:iter(none       , Put),
     undefined = Get(),
-    ok = hope_option:iter({some, Val}, Put),
+    {} = hope_option:iter({some, Val}, Put),
     Val = Get().
 
 t_of_result(_Cfg) ->

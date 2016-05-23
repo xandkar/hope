@@ -58,12 +58,12 @@ map({some, X}, F) -> {some, F(X)};
 map(none     , _) -> none.
 
 -spec iter(t(A), fun((A) -> (any()))) ->
-    ok.
+    {}.
 iter({some, X}, F) ->
     _ = F(X),
-    ok;
+    {};
 iter(none, _) ->
-    ok.
+    {}.
 
 -spec pipe([fun((A) -> t(B))], A) ->
     t(B).

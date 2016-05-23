@@ -106,10 +106,11 @@ pop(T1, K) ->
     end.
 
 -spec iter(t(K, V), fun((K, V) -> any())) ->
-    ok.
+    {}.
 iter(T, F1) ->
     F2 = lift_map(F1),
-    lists:foreach(F2, T).
+    ok = lists:foreach(F2, T),
+    {}.
 
 -spec map(t(K, V), fun((K, V) -> V)) ->
     t(K, V).
