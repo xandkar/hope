@@ -53,8 +53,8 @@ Abstractions
 
 ### Monads
 
-A class of burritos, used for sequencing operations on a particular data type.
-Defined in `hope_gen_monad`, implemented as:
+A class of burritos, used for expressing sequences of operations on some data
+type.  Defined in `hope_gen_monad`, implemented as:
 
 - `hope_result`: for composition of common functions returning
   `{ok, Val} | {error, Reason}`. An alternative to exceptions, which makes the
