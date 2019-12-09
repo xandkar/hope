@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ibnfirnas/hope.svg?branch=master)](https://travis-ci.org/ibnfirnas/hope)
+[![Build Status](https://travis-ci.org/xandkar/hope.svg?branch=master)](https://travis-ci.org/xandkar/hope)
 
 Hope
 ====
@@ -44,7 +44,7 @@ else, these are influenced by Jane Street's Core of the OCaml world.
         1. revising abstractions, or, if not practical
         2. creating a public record specifically for the purpose of passing
            many arguents, which simulates labeled arguments. For an example see
-           https://github.com/ibnfirnas/oauth1_core where I used that technique
+           https://github.com/xandkar/oauth1_core where I used that technique
            extensively (especially in oauth1_server.erl)
 
 
