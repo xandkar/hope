@@ -19,7 +19,6 @@ otp_release:
     - 18.0
     - 17.5
     - 17.0
-    - R16B02
 
 script:
     "make travis_ci"
